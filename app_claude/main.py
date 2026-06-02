@@ -2,9 +2,9 @@ import argparse
 
 from config.settings import Settings
 
-from services.azure_document_intelligence import (
-    AzureDocumentIntelligenceService
-)
+from services.azure_document_intelligence import AzureDocumentIntelligenceClientWrapper
+
+ 
 from services.azure_openai import AzureOpenAIService
 from services.text_extractor import TextExtractor
 from services.job_description_classifier import (
@@ -18,17 +18,30 @@ from storage.file_mover import FileMover
 from pipelines.pdf_pipeline import PdfPipeline
 from pipelines.jd_pipeline import JDPipeline
 
+from services.job_ad_analyzer import AzureJobAdClassifierWrapper
+from services.job_description_classifier import JobDescriptionClassifier
+ 
+
+
+ 
+
+# Update your import to reflect the domain wrapper
+from services.job_ad_analyzer import AzureJobAdClassifierWrapper
+from services.job_description_classifier import JobDescriptionClassifier
+ 
+ 
 
 def build_pdf_pipeline(settings):
 
-    document_service = AzureDocumentIntelligenceService(
+    # Clarify the variable name and use the new wrapper class
+    document_analyzer = AzureDocumentIntelligenceClientWrapper(
         endpoint=settings.azure_doc_endpoint,
         key=settings.azure_doc_key
     )
 
     return PdfPipeline(
         settings=settings,
-        document_service=document_service,
+        document_analyzer=document_analyzer,
         text_extractor=TextExtractor(),
         file_reader=FileReader(),
         file_writer=FileWriter(),
@@ -36,15 +49,18 @@ def build_pdf_pipeline(settings):
     )
 
 
+ 
+ 
 def build_jd_pipeline(settings):
-
-    openai_service = AzureOpenAIService(
+    # 1. Clear variable name indicating domain purpose
+    job_ad_analyzer = AzureJobAdClassifierWrapper(
         endpoint=settings.azure_openai_endpoint,
         api_key=settings.azure_openai_key
     )
 
+    # 2. Inject it cleanly into your existing classifier manager
     classifier = JobDescriptionClassifier(
-        openai_service=openai_service,
+        openai_service=job_ad_analyzer, # Backward compatible parameter injection
         model=settings.azure_openai_model
     )
 
@@ -54,6 +70,8 @@ def build_jd_pipeline(settings):
         file_reader=FileReader(),
         file_writer=FileWriter()
     )
+
+ 
 
 
 def main():

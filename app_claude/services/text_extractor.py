@@ -1,22 +1,14 @@
+# What it should look like to support the clean dictionary:
 class TextExtractor:
-
-    @staticmethod
-    def extract(result):
-
-        full_text = []
-
-        for page in result.pages:
-
-            page_content = [
-                line.content.strip()
-                for line in page.lines
-                if line.content and line.content.strip()
-            ]
-
-            if page_content:
-
-                full_text.append(
-                    "\n".join(page_content)
-                )
-
-        return "\n\n".join(full_text)
+    def extract(self, result_dict: dict) -> str:
+        extracted_lines = []
+        
+        # Safely get the pages list out of the dictionary
+        pages = result_dict.get("pages", [])
+        
+        for page in pages:
+            # Azure dictionary format nests lines under 'lines' inside each page
+            for line in page.get("lines", []):
+                extracted_lines.append(line.get("content", ""))
+                
+        return "\n".join(extracted_lines)
