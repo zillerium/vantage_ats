@@ -2,8 +2,8 @@ from openai import AzureOpenAI
 
 class AzureJobAdClassifierWrapper:
     """
-    A domain-specific wrapper around Azure OpenAI.
-    Responsible exclusively for transforming unstructured job ad text into validated structured formats.
+    A class-based wrapper around Azure OpenAI.
+    Provides a clean, dedicated boundary for LLM interactions.
     """
     def __init__(
         self,
@@ -17,33 +17,25 @@ class AzureJobAdClassifierWrapper:
             api_version=api_version
         )
 
-    def extract_structured_job_data(
+    def parse_structured_output(
         self,
-        deployment_name: str,
+        model: str,
         system_prompt: str,
-        raw_job_text: str,
+        user_text: str,
         response_schema,
         temperature: float = 0.0
     ):
         """
-        Uses Azure OpenAI Structured Outputs to enforce JSON syntax 
-        matching the provided response_schema.
+        Maintains the exact method interface that the working, 
+        heavily tested JobDescriptionClassifier expects.
         """
         response = self.client.beta.chat.completions.parse(
-            model=deployment_name,  # In Azure, this maps to your deployment name
+            model=model,
             messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                {
-                    "role": "user",
-                    "content": raw_job_text
-                }
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_text}
             ],
             response_format=response_schema,
             temperature=temperature
         )
-
-        # Returns the cleanly parsed Pydantic object directly
         return response.choices[0].message.parsed
