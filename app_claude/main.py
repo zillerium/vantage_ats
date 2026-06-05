@@ -21,6 +21,7 @@ from pipelines.jd_pipeline import JDPipeline
 # Update your import to reflect the domain wrapper
 from services.azure_text_classifer import AzureTextClassifierWrapper
 from services.job_description_classifier import JobDescriptionClassifier
+from services.reddit_product_classifer import RedditProductClassifier
  
  
 
@@ -44,12 +45,8 @@ def build_pdf_pipeline(settings):
 
  
  
-def build_jd_pipeline(settings):
-    # 1. Clear variable name indicating domain purpose
-    text_analyzer = AzureTextClassifierWrapper(
-        endpoint=settings.azure_openai_endpoint,
-        api_key=settings.azure_openai_key
-    )
+def build_jd_pipeline(settings, text_analyzer):
+
 
     # 2. Inject it cleanly into your existing classifier manager
     classifier = JobDescriptionClassifier(
@@ -67,6 +64,25 @@ def build_jd_pipeline(settings):
  
 
 
+ 
+ 
+def build_product_pipeline(settings, text_analyzer):
+
+
+    # 2. Inject it cleanly into your existing classifier manager
+    classifier = RedditProductClassifier(
+        openai_service=text_analyzer, # Backward compatible parameter injection
+        model=settings.azure_openai_model
+    )
+
+    return JDPipeline(
+        settings=settings,
+        classifier=classifier,
+        file_reader=FileReader(),
+        file_writer=FileWriter()
+    )
+
+
 def main():
 
     parser = argparse.ArgumentParser(
@@ -75,7 +91,7 @@ def main():
 
     parser.add_argument(
         "pipeline",
-        choices=["extract", "classify", "all"],
+        choices=["extract", "classify", "product", "all"],
         help=(
             "Which pipeline to run: "
             "'extract' (PDF→text), "
@@ -99,9 +115,25 @@ def main():
 
         print("\n🚀 Starting JD classification pipeline")
 
-        build_jd_pipeline(settings).process_all_files()
+        # 1. Clear variable name indicating domain purpose
+        text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
 
- 
+        build_jd_pipeline(settings, text_analyzer).process_all_files()
+
+    if args.pipeline in ("product", "all"):
+
+        print("\n🚀 Starting product classification pipeline")
+
+        # 1. Clear variable name indicating domain purpose
+        text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
+
+        build_product_pipeline(settings, text_analyzer).process_all_files()
 
 
 if __name__ == "__main__":
