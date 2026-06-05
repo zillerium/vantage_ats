@@ -1,6 +1,6 @@
 from openai import AzureOpenAI
 
-class AzureJobAdClassifierWrapper:
+class AzureTextClassifierWrapper:
     """
     A class-based wrapper around Azure OpenAI.
     Provides a clean, dedicated boundary for LLM interactions.

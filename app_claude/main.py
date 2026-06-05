@@ -18,15 +18,8 @@ from storage.file_mover import FileMover
 from pipelines.pdf_pipeline import PdfPipeline
 from pipelines.jd_pipeline import JDPipeline
 
-from services.job_ad_analyzer import AzureJobAdClassifierWrapper
-from services.job_description_classifier import JobDescriptionClassifier
- 
-
-
- 
-
 # Update your import to reflect the domain wrapper
-from services.job_ad_analyzer import AzureJobAdClassifierWrapper
+from services.azure_text_classifer import AzureTextClassifierWrapper
 from services.job_description_classifier import JobDescriptionClassifier
  
  
@@ -53,14 +46,14 @@ def build_pdf_pipeline(settings):
  
 def build_jd_pipeline(settings):
     # 1. Clear variable name indicating domain purpose
-    job_ad_analyzer = AzureJobAdClassifierWrapper(
+    text_analyzer = AzureTextClassifierWrapper(
         endpoint=settings.azure_openai_endpoint,
         api_key=settings.azure_openai_key
     )
 
     # 2. Inject it cleanly into your existing classifier manager
     classifier = JobDescriptionClassifier(
-        openai_service=job_ad_analyzer, # Backward compatible parameter injection
+        openai_service=text_analyzer, # Backward compatible parameter injection
         model=settings.azure_openai_model
     )
 
@@ -107,6 +100,8 @@ def main():
         print("\n🚀 Starting JD classification pipeline")
 
         build_jd_pipeline(settings).process_all_files()
+
+ 
 
 
 if __name__ == "__main__":
