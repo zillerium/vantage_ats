@@ -22,11 +22,14 @@ class Settings:
     jd_txt_dir: str
     jd_json_dir: str
     jd_processed_pdf_dir: str
+    
+    jd_processed_txt_dir: str
 
     # Product Pipeline Directories
     product_pdf_dir: str
     product_txt_dir: str
     product_json_dir: str
+    product_processed_txt_dir: str
     product_processed_pdf_dir: str
 
     # Database Pipeline Configs
@@ -69,6 +72,10 @@ class Settings:
                 "JD_JSON_DIR", 
                 "../../jd/jd-json"
             ),
+            jd_processed_txt_dir=os.getenv(
+                "JD_PROCESSED_TXT_DIR", 
+                "../../jd/jd-processed-txt"
+            ),
             jd_processed_pdf_dir=os.getenv(
                 "JD_PROCESSED_PDF_DIR", 
                 "../../jd/jd-processed-pdf"
@@ -85,6 +92,10 @@ class Settings:
             product_json_dir=os.getenv(
                 "PRODUCT_JSON_DIR", 
                 "../../product/product-json"
+            ),
+            product_processed_txt_dir=os.getenv(
+                "PRODUCT_PROCESSED_TXT_DIR", 
+                "../../product/product-processed-txt"
             ),
             product_processed_pdf_dir=os.getenv(
                 "PRODUCT_PROCESSED_PDF_DIR", 

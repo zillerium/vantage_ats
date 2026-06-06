@@ -26,7 +26,7 @@ class Pdf2TxtPipeline:
         self.pdf_processed_dir = pdf_processed_dir
 
     def process_all_pdfs(self):
-        pdf_files = self.file_reader.get_pdf_files(self.settings.pdf_input_dir)
+        pdf_files = self.file_reader.get_pdf_files(self.pdf_input_dir)
         print(f"\n📂 Found {len(pdf_files)} PDF files")
 
         for index, pdf_path in enumerate(pdf_files, 1):
@@ -60,7 +60,7 @@ class Pdf2TxtPipeline:
             text = self.text_extractor.extract(result_dict)
 
             output_file = (
-                Path(self.settings.txt_output_dir)
+                Path(self.txt_output_dir)
                 / f"{pdf_path.stem}.txt"
             )
 
@@ -74,7 +74,7 @@ class Pdf2TxtPipeline:
         try:
             destination = self.file_mover.move_file(
                 pdf_path,
-                self.settings.pdf_processed_dir
+                self.pdf_processed_dir
             )
             print(f"📦 Archived PDF: {destination}")
 

@@ -65,8 +65,8 @@ def build_jd_pipeline(settings, text_analyzer):
         classifier=classifier,
         file_reader=FileReader(),
         file_writer=FileWriter(),
-        text_input_dir=settings.jd_input_dir,
-        json_output_dir=settings.jd_output_dir,
+        text_input_dir=settings.jd_txt_dir,
+        json_output_dir=settings.jd_json_dir,
         text_processed_dir=settings.jd_processed_txt_dir
     )
 
