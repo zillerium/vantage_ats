@@ -17,18 +17,28 @@ class Settings:
     azure_openai_key: str
     azure_openai_model: str
 
-    # PDF pipeline directories
-    pdf_input_dir: str
-    pdf_output_dir: str
-    pdf_archive_dir: str
+    # JD Pipeline Directories
+    jd_pdf_dir: str
+    jd_txt_dir: str
+    jd_json_dir: str
+    jd_processed_pdf_dir: str
 
-    # JD classifier pipeline directories
-    jd_input_dir: str
-    jd_output_dir: str
+    # Product Pipeline Directories
+    product_pdf_dir: str
+    product_txt_dir: str
+    product_json_dir: str
+    product_processed_pdf_dir: str
+
+    # Database Pipeline Configs
+    database_load_csv_dir: str
+    cosmos_gremlin_endpoint: str
+    cosmos_key: str
+    cosmos_database_id: str
+    cosmos_graph_id: str
+    csv_file_name: str
 
     @classmethod
     def load(cls):
-
         return cls(
             azure_doc_endpoint=os.getenv(
                 "AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT"
@@ -46,22 +56,48 @@ class Settings:
                 "AZURE_OPENAI_MODEL",
                 "gpt-5.4-mini"
             ),
-         pdf_input_dir=os.getenv(
-                "PDF_INPUT_DIR"
+            # JD Pipeline
+            jd_pdf_dir=os.getenv(
+                "JD_PDF_DIR", 
+                "../../jd/jd-pdf"
             ),
-            pdf_output_dir=os.getenv(
-                "PDF_OUTPUT_DIR"
+            jd_txt_dir=os.getenv(
+                "JD_TXT_DIR", 
+                "../../jd/jd-txt"
             ),
-            pdf_archive_dir=os.getenv(
-                "PDF_ARCHIVE_DIR"
+            jd_json_dir=os.getenv(
+                "JD_JSON_DIR", 
+                "../../jd/jd-json"
             ),
-            jd_input_dir=os.getenv(
-                "JD_INPUT_DIR"
+            jd_processed_pdf_dir=os.getenv(
+                "JD_PROCESSED_PDF_DIR", 
+                "../../jd/jd-processed-pdf"
             ),
-            jd_output_dir=os.getenv(
-                "JD_OUTPUT_DIR"
+            # Product Pipeline
+            product_pdf_dir=os.getenv(
+                "PRODUCT_PDF_DIR", 
+                "../../product/product-pdf"
             ),
-  
+            product_txt_dir=os.getenv(
+                "PRODUCT_TXT_DIR", 
+                "../../product/product-txt"
+            ),
+            product_json_dir=os.getenv(
+                "PRODUCT_JSON_DIR", 
+                "../../product/product-json"
+            ),
+            product_processed_pdf_dir=os.getenv(
+                "PRODUCT_PROCESSED_PDF_DIR", 
+                "../../product/product-processed-pdf"
+            ),
+           # Database Pipeline
+            database_load_csv_dir=os.getenv("DATABASE_LOAD_CSV_DIR", "../../database/csv"),
+            cosmos_gremlin_endpoint=os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_CONNECTION_GREMLIN_ENDPOINT"),
+            cosmos_key=os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_KEY"),
+            cosmos_database_id=os.getenv("AZURE_COSMOSDB_DATABASE_ID", "productdbid"),
+            cosmos_graph_id=os.getenv("AZURE_COSMOSDB_GRAPH_ID", "allproducts"),
+            csv_file_name=os.getenv("DATABASE_CSV_FILE_NAME", "dataload.csv")
+            
         )
 
     def validate(self):
@@ -85,7 +121,7 @@ class Settings:
                 f"{', '.join(missing)}"
             )
 
-        if not self.azure_doc_endpoint.startswith("https://"):
+        if not self.azure_doc_endpoint or not self.azure_doc_endpoint.startswith("https://"):
             raise ValueError(
                 "AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT "
                 "must start with https://"

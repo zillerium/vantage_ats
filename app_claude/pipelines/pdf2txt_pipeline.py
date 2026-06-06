@@ -1,7 +1,7 @@
 # pipelines/pdf_pipeline.py
 from pathlib import Path
 
-class PdfPipeline:
+class Pdf2TxtPipeline:
 
     def __init__(
         self,
@@ -10,7 +10,10 @@ class PdfPipeline:
         text_extractor,
         file_reader,
         file_writer,
-        file_mover
+        file_mover,
+        pdf_input_dir,
+        txt_output_dir,
+        pdf_processed_dir
     ):
         self.settings = settings
         self.document_analyzer = document_analyzer
@@ -18,6 +21,9 @@ class PdfPipeline:
         self.file_reader = file_reader
         self.file_writer = file_writer
         self.file_mover = file_mover
+        self.pdf_input_dir = pdf_input_dir
+        self.txt_output_dir = txt_output_dir
+        self.pdf_processed_dir = pdf_processed_dir
 
     def process_all_pdfs(self):
         pdf_files = self.file_reader.get_pdf_files(self.settings.pdf_input_dir)
@@ -54,7 +60,7 @@ class PdfPipeline:
             text = self.text_extractor.extract(result_dict)
 
             output_file = (
-                Path(self.settings.pdf_output_dir)
+                Path(self.settings.txt_output_dir)
                 / f"{pdf_path.stem}.txt"
             )
 
@@ -68,7 +74,7 @@ class PdfPipeline:
         try:
             destination = self.file_mover.move_file(
                 pdf_path,
-                self.settings.pdf_archive_dir
+                self.settings.pdf_processed_dir
             )
             print(f"📦 Archived PDF: {destination}")
 
