@@ -64,7 +64,8 @@ def build_jd_pipeline(settings, text_analyzer):
         settings=settings,
         classifier=classifier,
         file_reader=FileReader(),
-        file_writer=FileWriter(),
+        file_writer=FileWriter(),        
+        file_mover=FileMover(),
         text_input_dir=settings.jd_txt_dir,
         json_output_dir=settings.jd_json_dir,
         text_processed_dir=settings.jd_processed_txt_dir
@@ -89,8 +90,9 @@ def build_product_pipeline(settings, text_analyzer):
         classifier=classifier,
         file_reader=FileReader(),
         file_writer=FileWriter(),
-        text_input_dir=settings.product_input_dir,
-        json_output_dir=settings.product_output_dir,
+        file_mover=FileMover(),
+        text_input_dir=settings.product_txt_dir,
+        json_output_dir=settings.product_json_dir,
         text_processed_dir=settings.product_processed_txt_dir
     )
 
