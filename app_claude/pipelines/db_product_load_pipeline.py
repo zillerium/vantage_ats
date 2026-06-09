@@ -1,7 +1,6 @@
 import csv
 from pathlib import Path
-from gremlin_python.driver import client, serializer
-
+from gremlin_python.driver import client, serializer   # ← Correct (no underscore)
 
 class DbProductLoadPipeline:
 
@@ -41,7 +40,7 @@ class DbProductLoadPipeline:
 
     def process_load(self):
         """Executes the complete stream-parse and transactional ingest processing loop."""
-        file_path = Path(self.settings.database_load_csv_dir) / self.settings.csv_file_name
+        file_path = Path(self.settings.database_load_csv_dir) / self.settings.database_load_csv_file_name
 
         if not file_path.exists():
             print(f"❌ Error: The file '{file_path}' was not found.")

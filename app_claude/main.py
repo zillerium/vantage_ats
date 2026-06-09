@@ -25,8 +25,21 @@ from services.job_description_classifier import JobDescriptionClassifier
 from services.reddit_product_classifer import RedditProductClassifier
  
 from pipelines.db_product_load_pipeline import DbProductLoadPipeline  # Added new pipeline import
+from pipelines.json2csv_pipeline import Json2CsvPipeline  # Added new pipeline import
+from pipelines.prepare_db_product_load_pipeline import PrepareDbProductLoadPipeline
 
- 
+
+def build_prepare_load_pipeline(settings):
+    """Instantiates the database load pre-aggregation worker layer pipeline context."""
+    return PrepareDbProductLoadPipeline(
+        settings=settings,
+        file_reader=FileReader(),
+        file_mover=FileMover(),
+        product_csv_dir=settings.database_product_csv_dir,
+        load_csv_dir=settings.database_load_csv_dir,
+        load_csv_file_name=settings.database_load_csv_file_name,
+        processed_csv_dir=settings.database_product_processed_csv_dir
+    )
 
 def build_txt_pipeline(settings,in_directory, out_directory, in_processed_dir):
 
@@ -72,7 +85,16 @@ def build_jd_pipeline(settings, text_analyzer):
     )
 
  
-
+def build_product_csv_pipeline(settings):
+    """Instantiates the JSON to CSV conversion pipeline container."""
+    return Json2CsvPipeline(
+        settings=settings,
+        file_reader=FileReader(),
+        file_mover=FileMover(),
+        json_input_dir=settings.product_json_dir,
+        csv_output_dir=settings.database_product_csv_dir,
+        json_processed_dir=settings.product_processed_json_dir
+    )
 
  
  
@@ -109,13 +131,15 @@ def main():
 
     parser.add_argument(
         "pipeline",
-        choices=["extract_jd", "extract_product", "jd", "product", "db_load", "all"],
+        choices=["extract_jd", "extract_product", "jd", "product", "prepare_load", "product_csv", "db_load", "all"],
         help=(
             "Which pipeline to run: "
             "'extract_jd' (PDF→text), "
             "'extract_product' (PDF→text), "
             "'jd' (text→JSON), "
             "'product' (text→JSON), "
+            "'product_csv' (JSON→CSV), "
+            "'prepare_load' (Concatenate fragments), "
             "'db_load' (CSV→CosmosDB Graph), "
             "'all' (extract and classify in sequence)"
         )
@@ -166,6 +190,16 @@ def main():
         )
 
         build_product_pipeline(settings, text_analyzer).process_all_files()
+
+    # Runtime check routing execution block to transform JSON files into graph CSV variants
+    if args.pipeline in ("product_csv", "all"):
+        print("\n🚀 Starting JSON to CSV Transformation pipeline")
+        build_product_csv_pipeline(settings).process_all_files()
+
+    # Runtime block interception triggering our flat compilation execution layer
+    if args.pipeline in ("prepare_load", "all"):
+        print("\n🚀 Starting DB Data Integration and Merge Preparation Pipeline Step")
+        build_prepare_load_pipeline(settings).process_preparation() 
 
         # Runtime check routing execution block to trigger migration class
     if args.pipeline in ("db_load", "all"):

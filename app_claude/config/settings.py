@@ -32,13 +32,20 @@ class Settings:
     product_processed_txt_dir: str
     product_processed_pdf_dir: str
 
-    # Database Pipeline Configs
     database_load_csv_dir: str
+    database_product_csv_dir: str                   # Added field assignment
+    database_product_processed_csv_dir: str         # Added field assignment
+    database_load_csv_file_name: str                 # Added field assignment
+    database_product_csv_file_name: str
+
+    # Database Pipeline Configs
+   
     cosmos_gremlin_endpoint: str
     cosmos_key: str
     cosmos_database_id: str
     cosmos_graph_id: str
-    csv_file_name: str
+  
+    product_processed_json_dir: str  # Added to track processed raw JSON files
 
     @classmethod
     def load(cls):
@@ -101,14 +108,21 @@ class Settings:
                 "PRODUCT_PROCESSED_PDF_DIR", 
                 "../../product/product-processed-pdf"
             ),
+            product_processed_json_dir=os.getenv(
+                "PRODUCT_PROCESSED_JSON_DIR", 
+                "../../product/product-processed-json"
+            ),
            # Database Pipeline
-            database_load_csv_dir=os.getenv("DATABASE_LOAD_CSV_DIR", "../../database/csv"),
+            database_load_csv_dir=os.getenv("DATABASE_LOAD_CSV_DIR", "../../database/csv_load"),
+            database_product_processed_csv_dir=os.getenv("DATABASE_PRODUCT_PROCESSED_CSV_DIR", "../../database/csv_product-processed"),  # ← ADD THIS
+            database_product_csv_dir=os.getenv("DATABASE_PRODUCT_CSV_DIR", "../../database/csvproduct"),
+            database_load_csv_file_name=os.getenv("DATABASE_LOAD_CSV_FILE_NAME", "dataload.csv"),
+            database_product_csv_file_name=os.getenv("DATABASE_PRODUCT_CSV_FILE_NAME", "productload.csv"),
             cosmos_gremlin_endpoint=os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_CONNECTION_GREMLIN_ENDPOINT"),
             cosmos_key=os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_KEY"),
             cosmos_database_id=os.getenv("AZURE_COSMOSDB_DATABASE_ID", "productdbid"),
             cosmos_graph_id=os.getenv("AZURE_COSMOSDB_GRAPH_ID", "allproducts"),
-            csv_file_name=os.getenv("DATABASE_CSV_FILE_NAME", "dataload.csv")
-            
+             
         )
 
     def validate(self):
