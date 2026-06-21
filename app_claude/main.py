@@ -4,13 +4,16 @@ from config import settings
 from config.settings import Settings
 
 from services.azure_document_intelligence import AzureDocumentIntelligenceClientWrapper
-
+from services.azure_vector_search_service import AzureVectorSearchService 
  
 from services.azure_openai import AzureOpenAIService
 from services.text_extractor import TextExtractor
 from services.job_description_classifier import (
     JobDescriptionClassifier
 )
+
+from services.ico_classifier import ICOClassifier
+from pipelines.ico_rag_pipeline import ICORagPipeline
 
 from storage.file_reader import FileReader
 from storage.file_writer import FileWriter
@@ -28,6 +31,8 @@ from pipelines.db_product_load_pipeline import DbProductLoadPipeline  # Added ne
 from pipelines.json2csv_pipeline import Json2CsvPipeline  # Added new pipeline import
 from pipelines.prepare_db_product_load_pipeline import PrepareDbProductLoadPipeline
 
+from services.jd_product_classifier import JobDescriptionProductClassifier
+from pipelines.jd_product_pipeline import JobDescriptionProductPipeline
 
 def build_prepare_load_pipeline(settings):
     """Instantiates the database load pre-aggregation worker layer pipeline context."""
@@ -96,8 +101,39 @@ def build_product_csv_pipeline(settings):
         json_processed_dir=settings.product_processed_json_dir
     )
 
+def build_product_jd_pipeline(settings, text_analyzer):
+    """Instantiates the pipeline that extracts products and classifications from JD JSONs."""
+    classifier = JobDescriptionProductClassifier(
+        openai_service=text_analyzer,
+        model=settings.azure_openai_model
+    )
+
+    return JobDescriptionProductPipeline(
+        settings=settings,
+        classifier=classifier,
+        file_reader=FileReader(),
+        file_writer=FileWriter(),
+        file_mover=FileMover(),
+        json_input_dir=settings.jd_json_dir,
+        json_output_dir=settings.product_jd_json_dir,
+        json_processed_dir=settings.jd_processed_json_dir
+    )
+
+
+def build_ico_pipeline(settings, text_analyzer, in_directory, in_processed_dir):
+    """Instantiates the processing context for ICO regulatory compliance vector RAG generation."""
+    return ICORagPipeline(
+        settings=settings,
+        vector_store=AzureVectorSearchService(settings=settings), # Real Azure Vector DB Wrapper
+        openai_service=text_analyzer,                             # Embeddings generation source
+        file_reader=FileReader(),
+        file_mover=FileMover(),
+        txt_input_dir=in_directory,
+        txt_processed_dir=in_processed_dir
+    )   
  
- 
+  
+
 def build_product_pipeline(settings, text_analyzer):
 
 
@@ -131,16 +167,19 @@ def main():
 
     parser.add_argument(
         "pipeline",
-        choices=["extract_jd", "extract_product", "jd", "product", "prepare_load", "product_csv", "db_load", "all"],
+        choices=["extract_jd", "extract_product", "extract_ico", "jd", "product", "prepare_load", "ico", "create_product_jd", "product_csv", "db_load", "all"],
         help=(
             "Which pipeline to run: "
             "'extract_jd' (PDF→text), "
             "'extract_product' (PDF→text), "
-            "'jd' (text→JSON), "
+            "'extract_ico' (PDF→text), "
+            "'jd' (text→JSON), "    
             "'product' (text→JSON), "
             "'product_csv' (JSON→CSV), "
+            "'create_product_jd' (Extract product info from JD JSONs), "
             "'prepare_load' (Concatenate fragments), "
             "'db_load' (CSV→CosmosDB Graph), "
+            "ico' (Generate ICO), "
             "'all' (extract and classify in sequence)"
         )
     )
@@ -151,7 +190,15 @@ def main():
     settings.validate()
 
  
+    if args.pipeline in ("create_product_jd", "all"):
+        print("\n🚀 Starting Job Description Product Extraction Pipeline")
 
+        text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
+
+        build_product_jd_pipeline(settings, text_analyzer).process_all_files()
 
     if args.pipeline in ("extract_jd", "all"):
 
@@ -165,7 +212,17 @@ def main():
 
         build_txt_pipeline(settings, settings.product_pdf_dir, settings.product_txt_dir, settings.product_processed_pdf_dir).process_all_pdfs()
 
+    if args.pipeline == "extract_ico":
+        print("\n🚀 Starting PDF ico extraction pipeline")
 
+        # Following your exact structural pattern:
+        build_txt_pipeline(
+            settings, 
+            settings.ico_pdf_dir, 
+            settings.ico_txt_dir, 
+            settings.ico_processed_pdf_dir
+        ).process_all_pdfs()  
+ 
     if args.pipeline in ("jd", "all"):
 
         print("\n🚀 Starting JD classification pipeline")
@@ -195,6 +252,22 @@ def main():
     if args.pipeline in ("product_csv", "all"):
         print("\n🚀 Starting JSON to CSV Transformation pipeline")
         build_product_csv_pipeline(settings).process_all_files()
+
+    
+    if args.pipeline in ("ico", "all"):
+        print("\n🚀 Starting ICO Data Protection Compliance Pipeline")
+
+        text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
+
+        build_ico_pipeline(
+            settings, 
+            text_analyzer,
+            settings.ico_txt_dir,
+            settings.ico_processed_txt_dir
+        ).process_all_files()
 
     # Runtime block interception triggering our flat compilation execution layer
     if args.pipeline in ("prepare_load", "all"):

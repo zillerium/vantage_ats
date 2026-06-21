@@ -3,3 +3,5 @@ azure-core
 openai
 pydantic
 python-dotenv
+azure-search-documents
+gremlinpython

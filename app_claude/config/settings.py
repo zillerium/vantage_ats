@@ -17,13 +17,28 @@ class Settings:
     azure_openai_key: str
     azure_openai_model: str
 
+    # ICO Pipeline Directories
+    ico_pdf_dir: str
+    ico_txt_dir: str
+    ico_json_dir: str
+    ico_processed_pdf_dir: str
+    ico_processed_txt_dir: str
+
+    # ICO Pipeline Directories
+    ico_pdf_dir: str
+    ico_txt_dir: str
+    ico_json_dir: str
+    ico_processed_pdf_dir: str
+    ico_processed_txt_dir: str
+
     # JD Pipeline Directories
     jd_pdf_dir: str
     jd_txt_dir: str
     jd_json_dir: str
     jd_processed_pdf_dir: str
-    
     jd_processed_txt_dir: str
+    product_jd_json_dir: str
+    jd_processed_json_dir: str
 
     # Product Pipeline Directories
     product_pdf_dir: str
@@ -31,6 +46,7 @@ class Settings:
     product_json_dir: str
     product_processed_txt_dir: str
     product_processed_pdf_dir: str
+    product_jd_processed_json_dir: str
 
     database_load_csv_dir: str
     database_product_csv_dir: str                   # Added field assignment
@@ -87,6 +103,27 @@ class Settings:
                 "JD_PROCESSED_PDF_DIR", 
                 "../../jd/jd-processed-pdf"
             ),
+            # ICO Pipeline
+            ico_pdf_dir=os.getenv(
+                "ICO_PDF_DIR", 
+                "../../ico/ico-pdf"
+            ),
+            ico_txt_dir=os.getenv(
+                "ICO_TXT_DIR", 
+                "../../ico/ico-txt"
+            ),
+            ico_json_dir=os.getenv(
+                "ICO_JSON_DIR", 
+                "../../ico/ico-json"
+            ),
+            ico_processed_pdf_dir=os.getenv(
+                "ICO_PROCESSED_PDF_DIR", 
+                "../../ico/ico-processed-pdf"
+            ),
+            ico_processed_txt_dir=os.getenv(
+                "ICO_PROCESSED_TXT_DIR", 
+                "../../ico/ico-processed-txt"
+            ),
             # Product Pipeline
             product_pdf_dir=os.getenv(
                 "PRODUCT_PDF_DIR", 
@@ -113,6 +150,11 @@ class Settings:
                 "../../product/product-processed-json"
             ),
            # Database Pipeline
+
+            jd_processed_json_dir=os.getenv("JD_PROCESSED_JSON_DIR", "../../jd/jd-processed-json"),
+            product_jd_json_dir=os.getenv("PRODUCT_JD_JSON_DIR", "../../jd-product/jd-product-json"),
+            product_jd_processed_json_dir=os.getenv("PRODUCT_JD_PROCESSED_JSON_DIR", "../../jd-product/jd-product-processed-json"),   
+
             database_load_csv_dir=os.getenv("DATABASE_LOAD_CSV_DIR", "../../database/csv_load"),
             database_product_processed_csv_dir=os.getenv("DATABASE_PRODUCT_PROCESSED_CSV_DIR", "../../database/csv_product-processed"),  # ← ADD THIS
             database_product_csv_dir=os.getenv("DATABASE_PRODUCT_CSV_DIR", "../../database/csvproduct"),
