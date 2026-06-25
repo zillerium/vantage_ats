@@ -1,13 +1,13 @@
-import json
 from pathlib import Path
+
 
 class ICORagPipeline:
 
     def __init__(
         self,
         settings,
-        vector_store,        # Injected AzureVectorSearchService
-        openai_service,      # Injected AzureOpenAIService (or wrapper) to generate embeddings
+        vector_store,
+        openai_service,
         file_reader,
         file_mover,
         txt_input_dir,
@@ -28,7 +28,7 @@ class ICORagPipeline:
     def process_all_files(self):
         input_path = Path(self.txt_input_dir)
         txt_files = list(input_path.glob("*.txt"))
-        
+
         print(f"\n📂 Found {len(txt_files)} ICO documents to vectorize into Azure Vector DB.")
 
         for index, file_path in enumerate(txt_files, 1):
@@ -48,20 +48,28 @@ class ICORagPipeline:
 
             for i, chunk in enumerate(chunks, 1):
                 chunk_id = f"{file_path.stem}_chunk_{i}"
-                
-                # Compute vector matrix using Azure OpenAI API embeddings deployment
+
+                print(
+                    f"   Chunk {i}/{len(chunks)} | "
+                    f"ID={chunk_id} | "
+                    f"Length={len(chunk)} chars"
+                )
+
                 response = self.openai_service.client.embeddings.create(
                     input=[chunk],
-                    model="text-embedding-3-small"
+                    model=self.settings.azure_openai_embedding_model
                 )
+
                 embedding_vector = response.data[0].embedding
 
-                # Push directly into the true Azure Vector Store
+                print(f"   Vector length={len(embedding_vector)}")
+
                 self.vector_store.insert_vector_chunk(
                     document_id=file_path.stem,
                     chunk_id=chunk_id,
                     text_content=chunk,
-                    vector=embedding_vector
+                    vector=embedding_vector,
+                    topic="ico"
                 )
 
             print(f"   ✅ Vector store indexed {len(chunks)} elements successfully.")
@@ -74,7 +82,7 @@ class ICORagPipeline:
             destination_dir = Path(self.txt_processed_dir)
             destination_dir.mkdir(parents=True, exist_ok=True)
             self.file_mover.move_file(file_path, str(destination_dir))
-            print(f"📦 Archived source text file.")
+            print("📦 Archived source text file.")
         except Exception as e:
             print(f"❌ Failed to archive file: {e}")
 
@@ -82,12 +90,23 @@ class ICORagPipeline:
         """Sliding-window word chunker."""
         chunks = []
         words = text.split()
-        word_size = self.chunk_size // 5 
+
+        word_size = self.chunk_size // 5
         word_overlap = self.chunk_overlap // 5
-        
+
+        step = word_size - word_overlap
+
+        if step <= 0:
+            raise ValueError("chunk_overlap must be smaller than chunk_size")
+
         i = 0
         while i < len(words):
             chunk_words = words[i:i + word_size]
-            chunks.append(" ".join(chunk_words))
-            i += (word_size - word_overlap)
+            chunk = " ".join(chunk_words)
+
+            if chunk.strip():
+                chunks.append(chunk)
+
+            i += step
+
         return chunks

@@ -1,0 +1,2129 @@
+==================================================
+FILE: ./config/__init__.py
+==================================================
+
+
+
+==================================================
+FILE: ./config/settings.py
+==================================================
+from dataclasses import dataclass
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
+@dataclass
+class Settings:
+
+    # Azure Document Intelligence (PDF → text)
+    azure_doc_endpoint: str
+    azure_doc_key: str
+
+    # Azure OpenAI (text → JSON)
+    azure_openai_endpoint: str
+    azure_openai_key: str
+    azure_openai_model: str
+
+    azure_openai_embedding_model: str  # 💎 ADDED FIELD FOR RAG EMBEDDINGS
+
+    azure_search_endpoint: str
+    azure_search_admin_key: str
+    azure_search_index: str
+
+    # ICO Pipeline Directories
+    ico_pdf_dir: str
+    ico_txt_dir: str
+    ico_json_dir: str
+    ico_processed_pdf_dir: str
+    ico_processed_txt_dir: str
+
+    # ICO Pipeline Directories
+    ico_pdf_dir: str
+    ico_txt_dir: str
+    ico_json_dir: str
+    ico_processed_pdf_dir: str
+    ico_processed_txt_dir: str
+
+    # JD Pipeline Directories
+    jd_pdf_dir: str
+    jd_txt_dir: str
+    jd_json_dir: str
+    jd_processed_pdf_dir: str
+    jd_processed_txt_dir: str
+    product_jd_json_dir: str
+    jd_processed_json_dir: str
+
+    # Product Pipeline Directories
+    product_pdf_dir: str
+    product_txt_dir: str
+    product_json_dir: str
+    product_processed_txt_dir: str
+    product_processed_pdf_dir: str
+    product_jd_processed_json_dir: str
+
+    database_load_csv_dir: str
+    database_product_csv_dir: str                   # Added field assignment
+    database_product_processed_csv_dir: str         # Added field assignment
+    database_load_csv_file_name: str                 # Added field assignment
+    database_product_csv_file_name: str
+
+    # Database Pipeline Configs
+   
+    cosmos_gremlin_endpoint: str
+    cosmos_key: str
+    cosmos_database_id: str
+    cosmos_graph_id: str
+  
+    product_processed_json_dir: str  # Added to track processed raw JSON files
+
+    @classmethod
+    def load(cls):
+        return cls(
+            azure_doc_endpoint=os.getenv(
+                "AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT"
+            ),
+            azure_doc_key=os.getenv(
+                "AZURE_DOCUMENT_INTELLIGENCE_KEY"
+            ),
+            azure_openai_endpoint=os.getenv(
+                "AZURE_MODEL_EUROPE_ENDPOINT"
+            ),
+            azure_openai_key=os.getenv(
+                "AZURE_EUROPE_KEY"
+            ),
+            azure_openai_model=os.getenv(
+                "AZURE_OPENAI_MODEL",
+                "gpt-5.4-mini"
+            ),
+            azure_openai_embedding_model=os.getenv(
+                "AZURE_OPENAI_EMBEDDING_MODEL",
+                "text-embedding-3-small"
+            ),
+            # JD Pipeline
+            jd_pdf_dir=os.getenv(
+                "JD_PDF_DIR", 
+                "../../jd/jd-pdf"
+            ),
+            jd_txt_dir=os.getenv(
+                "JD_TXT_DIR", 
+                "../../jd/jd-txt"
+            ),
+            jd_json_dir=os.getenv(
+                "JD_JSON_DIR", 
+                "../../jd/jd-json"
+            ),
+            jd_processed_txt_dir=os.getenv(
+                "JD_PROCESSED_TXT_DIR", 
+                "../../jd/jd-processed-txt"
+            ),
+            jd_processed_pdf_dir=os.getenv(
+                "JD_PROCESSED_PDF_DIR", 
+                "../../jd/jd-processed-pdf"
+            ),
+            # ICO Pipeline
+            ico_pdf_dir=os.getenv(
+                "ICO_PDF_DIR", 
+                "../../ico/ico-pdf"
+            ),
+            ico_txt_dir=os.getenv(
+                "ICO_TXT_DIR", 
+                "../../ico/ico-txt"
+            ),
+            ico_json_dir=os.getenv(
+                "ICO_JSON_DIR", 
+                "../../ico/ico-json"
+            ),
+            ico_processed_pdf_dir=os.getenv(
+                "ICO_PROCESSED_PDF_DIR", 
+                "../../ico/ico-processed-pdf"
+            ),
+            ico_processed_txt_dir=os.getenv(
+                "ICO_PROCESSED_TXT_DIR", 
+                "../../ico/ico-processed-txt"
+            ),
+            # Product Pipeline
+            product_pdf_dir=os.getenv(
+                "PRODUCT_PDF_DIR", 
+                "../../product/product-pdf"
+            ),
+            product_txt_dir=os.getenv(
+                "PRODUCT_TXT_DIR", 
+                "../../product/product-txt"
+            ),
+            product_json_dir=os.getenv(
+                "PRODUCT_JSON_DIR", 
+                "../../product/product-json"
+            ),
+            product_processed_txt_dir=os.getenv(
+                "PRODUCT_PROCESSED_TXT_DIR", 
+                "../../product/product-processed-txt"
+            ),
+            product_processed_pdf_dir=os.getenv(
+                "PRODUCT_PROCESSED_PDF_DIR", 
+                "../../product/product-processed-pdf"
+            ),
+            product_processed_json_dir=os.getenv(
+                "PRODUCT_PROCESSED_JSON_DIR", 
+                "../../product/product-processed-json"
+            ),
+           # Database Pipeline
+            azure_search_endpoint=os.getenv("AZURE_SEARCH_ENDPOINT"),
+            azure_search_admin_key=os.getenv("AZURE_SEARCH_ADMIN_KEY"),
+            azure_search_index=os.getenv("AZURE_SEARCH_INDEX", "skills-rag-v4"),
+            jd_processed_json_dir=os.getenv("JD_PROCESSED_JSON_DIR", "../../jd/jd-processed-json"),
+            product_jd_json_dir=os.getenv("PRODUCT_JD_JSON_DIR", "../../jd-product/jd-product-json"),
+            product_jd_processed_json_dir=os.getenv("PRODUCT_JD_PROCESSED_JSON_DIR", "../../jd-product/jd-product-processed-json"),   
+
+            database_load_csv_dir=os.getenv("DATABASE_LOAD_CSV_DIR", "../../database/csv_load"),
+            database_product_processed_csv_dir=os.getenv("DATABASE_PRODUCT_PROCESSED_CSV_DIR", "../../database/csv_product-processed"),  # ← ADD THIS
+            database_product_csv_dir=os.getenv("DATABASE_PRODUCT_CSV_DIR", "../../database/csvproduct"),
+            database_load_csv_file_name=os.getenv("DATABASE_LOAD_CSV_FILE_NAME", "dataload.csv"),
+            database_product_csv_file_name=os.getenv("DATABASE_PRODUCT_CSV_FILE_NAME", "productload.csv"),
+            cosmos_gremlin_endpoint=os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_CONNECTION_GREMLIN_ENDPOINT"),
+            cosmos_key=os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_KEY"),
+            cosmos_database_id=os.getenv("AZURE_COSMOSDB_DATABASE_ID", "productdbid"),
+            cosmos_graph_id=os.getenv("AZURE_COSMOSDB_GRAPH_ID", "allproducts"),
+             
+        )
+
+    def validate(self):
+        """Raise ValueError for any missing required credentials."""
+
+        required = {
+            "AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT": self.azure_doc_endpoint,
+            "AZURE_DOCUMENT_INTELLIGENCE_KEY": self.azure_doc_key,
+            "AZURE_MODEL_EUROPE_ENDPOINT": self.azure_openai_endpoint,
+            "AZURE_EUROPE_KEY": self.azure_openai_key,
+            "AZURE_OPENAI_EMBEDDING_MODEL": self.azure_openai_embedding_model,
+            "AZURE_SEARCH_ENDPOINT": self.azure_search_endpoint,
+            "AZURE_SEARCH_ADMIN_KEY": self.azure_search_admin_key,
+            "AZURE_SEARCH_INDEX": self.azure_search_index,
+        }
+
+        missing = [
+            name for name, value in required.items()
+            if not value
+        ]
+
+        if missing:
+            raise ValueError(
+                f"Missing required .env variables: "
+                f"{', '.join(missing)}"
+            )
+
+        if not self.azure_doc_endpoint or not self.azure_doc_endpoint.startswith("https://"):
+            raise ValueError(
+                "AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT "
+                "must start with https://"
+            )
+ 
+        if not self.azure_search_endpoint.startswith("https://"):
+            raise ValueError(
+                "AZURE_SEARCH_ENDPOINT must start with https://"
+            )
+
+
+==================================================
+FILE: ./main.py
+==================================================
+import argparse
+
+from config import settings
+from config.settings import Settings
+
+from services.azure_document_intelligence import AzureDocumentIntelligenceClientWrapper
+from services.azure_vector_search_service import AzureVectorSearchService 
+ 
+from services.azure_openai import AzureOpenAIService
+from services.text_extractor import TextExtractor
+from services.job_description_classifier import (
+    JobDescriptionClassifier
+)
+
+from services.ico_classifier import ICOClassifier
+from pipelines.ico_rag_pipeline import ICORagPipeline
+
+from storage.file_reader import FileReader
+from storage.file_writer import FileWriter
+from storage.file_mover import FileMover
+
+from pipelines.pdf2txt_pipeline import Pdf2TxtPipeline
+from pipelines.txt2json_pipeline import Txt2JsonPipeline
+
+# Update your import to reflect the domain wrapper
+from services.azure_text_classifer import AzureTextClassifierWrapper
+from services.job_description_classifier import JobDescriptionClassifier
+from services.reddit_product_classifer import RedditProductClassifier
+ 
+from pipelines.db_product_load_pipeline import DbProductLoadPipeline  # Added new pipeline import
+from pipelines.json2csv_pipeline import Json2CsvPipeline  # Added new pipeline import
+from pipelines.prepare_db_product_load_pipeline import PrepareDbProductLoadPipeline
+
+from services.jd_product_classifier import JobDescriptionProductClassifier
+from pipelines.jd_product_pipeline import JobDescriptionProductPipeline
+
+def build_prepare_load_pipeline(settings):
+    """Instantiates the database load pre-aggregation worker layer pipeline context."""
+    return PrepareDbProductLoadPipeline(
+        settings=settings,
+        file_reader=FileReader(),
+        file_mover=FileMover(),
+        product_csv_dir=settings.database_product_csv_dir,
+        load_csv_dir=settings.database_load_csv_dir,
+        load_csv_file_name=settings.database_load_csv_file_name,
+        processed_csv_dir=settings.database_product_processed_csv_dir
+    )
+
+def build_txt_pipeline(settings,in_directory, out_directory, in_processed_dir):
+
+    # Clarify the variable name and use the new wrapper class
+    document_analyzer = AzureDocumentIntelligenceClientWrapper(
+        endpoint=settings.azure_doc_endpoint,
+        key=settings.azure_doc_key
+    )
+
+    return Pdf2TxtPipeline(
+        settings=settings,
+        document_analyzer=document_analyzer,
+        text_extractor=TextExtractor(),
+        file_reader=FileReader(),
+        file_writer=FileWriter(),
+        file_mover=FileMover(),
+        pdf_input_dir=in_directory,
+        txt_output_dir=out_directory,
+        pdf_processed_dir=in_processed_dir
+    )
+
+ 
+ 
+ 
+def build_jd_pipeline(settings, text_analyzer):
+
+
+    # 2. Inject it cleanly into your existing classifier manager
+    classifier = JobDescriptionClassifier(
+        openai_service=text_analyzer, # Backward compatible parameter injection
+        model=settings.azure_openai_model
+    )
+
+    return Txt2JsonPipeline(
+        settings=settings,
+        classifier=classifier,
+        file_reader=FileReader(),
+        file_writer=FileWriter(),        
+        file_mover=FileMover(),
+        text_input_dir=settings.jd_txt_dir,
+        json_output_dir=settings.jd_json_dir,
+        text_processed_dir=settings.jd_processed_txt_dir
+    )
+
+ 
+def build_product_csv_pipeline(settings):
+    """Instantiates the JSON to CSV conversion pipeline container."""
+    return Json2CsvPipeline(
+        settings=settings,
+        file_reader=FileReader(),
+        file_mover=FileMover(),
+        json_input_dir=settings.product_json_dir,
+        csv_output_dir=settings.database_product_csv_dir,
+        json_processed_dir=settings.product_processed_json_dir
+    )
+
+def build_product_jd_pipeline(settings, text_analyzer):
+    """Instantiates the pipeline that extracts products and classifications from JD JSONs."""
+    classifier = JobDescriptionProductClassifier(
+        openai_service=text_analyzer,
+        model=settings.azure_openai_model
+    )
+
+    return JobDescriptionProductPipeline(
+        settings=settings,
+        classifier=classifier,
+        file_reader=FileReader(),
+        file_writer=FileWriter(),
+        file_mover=FileMover(),
+        json_input_dir=settings.jd_json_dir,
+        json_output_dir=settings.product_jd_json_dir,
+        json_processed_dir=settings.jd_processed_json_dir
+    )
+
+
+def build_ico_pipeline(settings, text_analyzer, in_directory, in_processed_dir):
+
+    print(f"SEARCH_ENDPOINT={settings.azure_search_endpoint}")
+    print(f"SEARCH_INDEX={settings.azure_search_index}")
+    print(f"SEARCH_KEY_PRESENT={bool(settings.azure_search_admin_key)}")
+    print(f"EMBEDDING_MODEL={settings.azure_openai_embedding_model}")
+
+    return ICORagPipeline(
+        settings=settings,
+        vector_store=AzureVectorSearchService(settings=settings),
+        openai_service=text_analyzer,
+        file_reader=FileReader(),
+        file_mover=FileMover(),
+        txt_input_dir=in_directory,
+        txt_processed_dir=in_processed_dir
+    )
+  
+
+def build_product_pipeline(settings, text_analyzer):
+
+
+    # 2. Inject it cleanly into your existing classifier manager
+    classifier = RedditProductClassifier(
+        openai_service=text_analyzer, # Backward compatible parameter injection
+        model=settings.azure_openai_model
+    )
+
+    return Txt2JsonPipeline(
+        settings=settings,
+        classifier=classifier,
+        file_reader=FileReader(),
+        file_writer=FileWriter(),
+        file_mover=FileMover(),
+        text_input_dir=settings.product_txt_dir,
+        json_output_dir=settings.product_json_dir,
+        text_processed_dir=settings.product_processed_txt_dir
+    )
+
+# 2. Add structural instantiation binding factory matching code standards
+def build_db_load_pipeline(settings):
+    """Instantiates the database processing pipeline container."""
+    return DbProductLoadPipeline(settings=settings)
+
+def main():
+
+    parser = argparse.ArgumentParser(
+        description="VantageCV pipeline runner"
+    )
+
+    parser.add_argument(
+        "pipeline",
+        choices=["extract_jd", "extract_product", "extract_ico", "jd", "product", "prepare_load", "ico", "create_product_jd", "product_csv", "db_load", "all"],
+        help=(
+            "Which pipeline to run: "
+            "'extract_jd' (PDF→text), "
+            "'extract_product' (PDF→text), "
+            "'extract_ico' (PDF→text), "
+            "'jd' (text→JSON), "    
+            "'product' (text→JSON), "
+            "'product_csv' (JSON→CSV), "
+            "'create_product_jd' (Extract product info from JD JSONs), "
+            "'prepare_load' (Concatenate fragments), "
+            "'db_load' (CSV→CosmosDB Graph), "
+            "ico' (Generate ICO), "
+            "'all' (extract and classify in sequence)"
+        )
+    )
+
+    args = parser.parse_args()
+
+    settings = Settings.load()
+    settings.validate()
+
+ 
+    if args.pipeline in ("create_product_jd", "all"):
+        print("\n🚀 Starting Job Description Product Extraction Pipeline")
+
+        text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
+
+        build_product_jd_pipeline(settings, text_analyzer).process_all_files()
+
+    if args.pipeline in ("extract_jd", "all"):
+
+        print("\n🚀 Starting PDF jd extraction pipeline")
+
+        build_txt_pipeline(settings, settings.jd_pdf_dir, settings.jd_txt_dir, settings.jd_processed_pdf_dir).process_all_pdfs()
+
+    if args.pipeline in ("extract_product", "all"):
+
+        print("\n🚀 Starting PDF product extraction pipeline")
+
+        build_txt_pipeline(settings, settings.product_pdf_dir, settings.product_txt_dir, settings.product_processed_pdf_dir).process_all_pdfs()
+
+    if args.pipeline == "extract_ico":
+        print("\n🚀 Starting PDF ico extraction pipeline")
+
+        # Following your exact structural pattern:
+        build_txt_pipeline(
+            settings, 
+            settings.ico_pdf_dir, 
+            settings.ico_txt_dir, 
+            settings.ico_processed_pdf_dir
+        ).process_all_pdfs()  
+ 
+    if args.pipeline in ("jd", "all"):
+
+        print("\n🚀 Starting JD classification pipeline")
+
+        # 1. Clear variable name indicating domain purpose
+        text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
+
+        build_jd_pipeline(settings, text_analyzer).process_all_files()
+
+    if args.pipeline in ("product", "all"):
+
+        # this logic will process reddit product reviews from text → JSON using the same AzureTextClassifierWrapper and a new RedditProductClassifier manager class that you would create following the pattern of JobDescriptionClassifier
+        print("\n🚀 Starting product classification pipeline")
+
+        # 1. Clear variable name indicating domain purpose
+        text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
+
+        build_product_pipeline(settings, text_analyzer).process_all_files()
+
+    # Runtime check routing execution block to transform JSON files into graph CSV variants
+    if args.pipeline in ("product_csv", "all"):
+        print("\n🚀 Starting JSON to CSV Transformation pipeline")
+        build_product_csv_pipeline(settings).process_all_files()
+
+    
+    if args.pipeline in ("ico", "all"):
+        print("\n🚀 Starting ICO Data Protection Compliance Pipeline")
+
+        text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
+
+        build_ico_pipeline(
+            settings, 
+            text_analyzer,
+            settings.ico_txt_dir,
+            settings.ico_processed_txt_dir
+        ).process_all_files()
+
+    # Runtime block interception triggering our flat compilation execution layer
+    if args.pipeline in ("prepare_load", "all"):
+        print("\n🚀 Starting DB Data Integration and Merge Preparation Pipeline Step")
+        build_prepare_load_pipeline(settings).process_preparation() 
+
+        # Runtime check routing execution block to trigger migration class
+    if args.pipeline in ("db_load", "all"):
+        print("\n🚀 Starting Graph Database loading pipeline")
+        build_db_load_pipeline(settings).process_load()
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+==================================================
+FILE: ./pipelines/__init__.py
+==================================================
+
+
+
+==================================================
+FILE: ./pipelines/txt2json_pipeline.py
+==================================================
+from pathlib import Path
+
+
+class Txt2JsonPipeline:
+
+    def __init__(
+        self,
+        settings,
+        classifier,
+        file_reader,
+        file_writer,
+        file_mover,  # Added to support file archiving operations
+        text_input_dir,
+        json_output_dir,
+        text_processed_dir
+    ):
+
+        self.settings = settings
+        self.classifier = classifier
+        self.file_reader = file_reader
+        self.file_writer = file_writer
+        self.file_mover = file_mover
+        self.text_input_dir = text_input_dir
+        self.json_output_dir = json_output_dir
+        self.text_processed_dir = text_processed_dir
+
+    def process_all_files(self):
+
+        txt_files = self.file_reader.get_text_files(
+            self.text_input_dir
+        )
+
+        print(f"\n📂 Found {len(txt_files)} text files")
+
+        for index, txt_file in enumerate(txt_files, 1):
+
+            print("\n" + "=" * 70)
+            print(
+                f"📄 Processing file "
+                f"({index}/{len(txt_files)}): "
+                f"{txt_file.name}"
+            )
+
+            self._process_single_file(txt_file)
+
+        print("\n🎉 Classification complete")
+
+    def _process_single_file(self, txt_file):
+
+        try:
+
+            text = self.file_reader.read_text(txt_file)
+
+            print(f"✅ Loaded {len(text):,} chars")
+
+        except Exception as e:
+
+            print(f"❌ Failed reading file: {e}")
+            return
+
+        try:
+
+            print("🤖 Running classification...")
+
+            data = self.classifier.classify(text)
+
+            print("✅ Classification complete")
+
+        except Exception as e:
+
+            print(f"❌ Classification failed: {e}")
+            return
+
+        try:
+
+            output_file = (
+                Path(self.json_output_dir)
+                / f"{txt_file.stem}.json"
+            )
+
+            self.file_writer.write_json(
+                output_file,
+                data
+            )
+
+            print(f"✅ Saved JSON: {output_file}")
+
+        except Exception as e:
+
+            print(f"❌ Failed saving JSON: {e}")
+            return  # Added return to prevent archiving if writing JSON fails
+
+        # 1. Archive the text file after a completely successful pipeline pass
+        try:
+            destination = self.file_mover.move_file(
+                txt_file,
+                self.text_processed_dir
+            )
+            print(f"📦 Archived Text: {destination}")
+
+        except Exception as e:
+            print(f"❌ Failed archiving Text: {e}")
+
+
+==================================================
+FILE: ./pipelines/pdf2txt_pipeline.py
+==================================================
+# pipelines/pdf_pipeline.py
+from pathlib import Path
+
+class Pdf2TxtPipeline:
+
+    def __init__(
+        self,
+        settings,
+        document_analyzer,  # Explicit domain-driven name replacing 'document_service'
+        text_extractor,
+        file_reader,
+        file_writer,
+        file_mover,
+        pdf_input_dir,
+        txt_output_dir,
+        pdf_processed_dir
+    ):
+        self.settings = settings
+        self.document_analyzer = document_analyzer
+        self.text_extractor = text_extractor
+        self.file_reader = file_reader
+        self.file_writer = file_writer
+        self.file_mover = file_mover
+        self.pdf_input_dir = pdf_input_dir
+        self.txt_output_dir = txt_output_dir
+        self.pdf_processed_dir = pdf_processed_dir
+
+    def process_all_pdfs(self):
+        pdf_files = self.file_reader.get_pdf_files(self.pdf_input_dir)
+        print(f"\n📂 Found {len(pdf_files)} PDF files")
+
+        for index, pdf_path in enumerate(pdf_files, 1):
+            print("\n" + "=" * 70)
+            print(f"📄 Processing PDF ({index}/{len(pdf_files)}): {pdf_path.name}")
+            self._process_single_pdf(pdf_path)
+
+        print("\n🎉 PDF extraction complete")
+
+    def _process_single_pdf(self, pdf_path):
+        try:
+            print("🔄 Analysing PDF via Azure Document Intelligence...")
+
+            # 1. Read the file into bytes here at the pipeline/storage boundary
+            with open(pdf_path, "rb") as f:
+                pdf_bytes = f.read()
+
+            # 2. Call the domain-specific method passing the raw data bytes
+            result_dict = self.document_analyzer.analyze_job_ad(pdf_bytes)
+
+            # 3. Read safely from the returned dictionary rather than an SDK object
+            total_pages = len(result_dict.get("pages", []))
+            print(f"✅ Analysed {total_pages} pages")
+
+        except Exception as e:
+            print(f"❌ Failed analysing PDF: {e}")
+            return
+
+        try:
+            # Pass the clean dict payload to your text extractor
+            text = self.text_extractor.extract(result_dict)
+
+            output_file = (
+                Path(self.txt_output_dir)
+                / f"{pdf_path.stem}.txt"
+            )
+
+            self.file_writer.write_text(output_file, text)
+            print(f"✅ Saved text: {output_file}")
+
+        except Exception as e:
+            print(f"❌ Failed extracting text: {e}")
+            return
+
+        try:
+            destination = self.file_mover.move_file(
+                pdf_path,
+                self.pdf_processed_dir
+            )
+            print(f"📦 Archived PDF: {destination}")
+
+        except Exception as e:
+            print(f"❌ Failed archiving PDF: {e}")
+
+
+==================================================
+FILE: ./pipelines/db_product_load_pipeline.py
+==================================================
+import csv
+from pathlib import Path
+from gremlin_python.driver import client, serializer   # ← Correct (no underscore)
+
+class DbProductLoadPipeline:
+
+    def __init__(self, settings):
+        self.settings = settings
+        self.client = None
+
+    def _init_client(self):
+        """Lazy initialization of the network client socket."""
+        username_path = f"/dbs/{self.settings.cosmos_database_id}/colls/{self.settings.cosmos_graph_id}"
+        
+        self.client = client.Client(
+            self.settings.cosmos_gremlin_endpoint,
+            "g",
+            username=username_path,
+            password=self.settings.cosmos_key,
+            message_serializer=serializer.GraphSONSerializersV2d0()
+        )
+
+    def _generate_upsert_query(self, product_id: str, name: str) -> str:
+        """Creates an idempotent Gremlin query using the coalesce pattern."""
+        safe_id = product_id.replace("'", "\\'")
+        safe_name = name.replace("'", "\\'")
+        
+        return f"""
+        g.V('{safe_id}').
+          fold().
+          coalesce(
+            unfold(),
+            addV('product').
+            property('id', '{safe_id}').
+            property('pk', '{safe_id}').
+            property('name', '{safe_name}').
+            property('type', 'product')
+          )
+        """
+
+    def process_load(self):
+        """Executes the complete stream-parse and transactional ingest processing loop."""
+        file_path = Path(self.settings.database_load_csv_dir) / self.settings.database_load_csv_file_name
+
+        if not file_path.exists():
+            print(f"❌ Error: The file '{file_path}' was not found.")
+            return
+
+        print(f"📂 Opening '{file_path}' for data migration stream...")
+        self._init_client()
+
+        success_count = 0
+        error_count = 0
+
+        try:
+            with open(file_path, mode='r', encoding='utf-8') as f:
+                reader = csv.reader(f)
+                
+                for row in reader:
+                    if not row or len(row) < 2:
+                        continue
+                        
+                    pk_field = row[0].strip('"').strip()
+                    name_field = row[1].strip('"').strip()
+                    
+                    if not pk_field:
+                        continue
+
+                    query = self._generate_upsert_query(pk_field, name_field)
+                    
+                    try:
+                        result_set = self.client.submitAsync(query).result()
+                        result_set.all().result()
+                        print(f"  ✅ Successfully processed edge vertex: {pk_field}")
+                        success_count += 1
+                    except Exception as e:
+                        print(f"  ❌ Failed to process '{pk_field}': {e}")
+                        error_count += 1
+                        
+        finally:
+            if self.client:
+                self.client.close()
+                print("🔒 Database connection socket cleanly closed.")
+
+        print(f"\n🎉 Database loading finished! Summary: {success_count} migrated, {error_count} failed.")
+
+
+==================================================
+FILE: ./pipelines/json2csv_pipeline.py
+==================================================
+import json
+from pathlib import Path
+
+class Json2CsvPipeline:
+    def __init__(
+        self,
+        settings,
+        file_reader,
+        file_mover,
+        json_input_dir,
+        csv_output_dir,
+        json_processed_dir
+    ):
+        self.settings = settings
+        self.file_reader = file_reader
+        self.file_mover = file_mover
+        self.json_input_dir = json_input_dir
+        self.csv_output_dir = csv_output_dir
+        self.json_processed_dir = json_processed_dir
+
+    def process_all_files(self):
+        # Using pathlib to find all JSON files in the input directory
+        input_path = Path(self.json_input_dir)
+        json_files = list(input_path.glob("*.json"))
+
+        print(f"\n📂 Found {len(json_files)} JSON files to transform into CSV")
+
+        for index, json_file in enumerate(json_files, 1):
+            print("\n" + "=" * 70)
+            print(f"📄 Processing JSON file ({index}/{len(json_files)}): {json_file.name}")
+            
+            self._process_single_file(json_file)
+
+        print("\n🎉 CSV Generation and archiving complete")
+
+    def _process_single_file(self, json_file: Path):
+        # 1. Safely read and parse JSON file
+        try:
+            with open(json_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            print(f"✅ Successfully read and parsed {json_file.name}")
+        except Exception as e:
+            print(f"❌ Failed to parse JSON from '{json_file}': {e}")
+            return
+
+        # 2. Extract array of identified products
+        products = data.get("identified_products", [])
+        if not products:
+            print(f"⚠️ Warning: No 'identified_products' array found inside '{json_file.name}'.")
+            return
+
+        # 3. Create out filepath with the same base name, but with a .csv extension
+        output_file = Path(self.csv_output_dir) / f"{json_file.stem}.csv"
+
+        # 4. Write data using the required precise triple-quote layout formatting
+        try:
+            with open(output_file, mode='w', encoding='utf-8', newline='') as csv_file:
+                for item in products:
+                    name = item.get("product_name", "").strip()
+                    desc = item.get("product_description", "").strip()
+                    cat = item.get("category", "").strip()
+                    
+                    # Row schema: 3 populated fields wrapper in triple quotes, followed by 2 trailing empty sets
+                    row_str = f'"""{name}""","""{desc}""","""{cat}""","""""",""""""\n'
+                    csv_file.write(row_str)
+                    
+            print(f"✅ Generated graph load file: '{output_file}' ({len(products)} products exported).")
+        except Exception as e:
+            print(f"❌ Failed to write CSV file layout: {e}")
+            return
+
+        # 5. Archive raw file after completely successful transform
+        try:
+            destination = self.file_mover.move_file(
+                json_file,
+                self.json_processed_dir
+            )
+            print(f"📦 Archived JSON file to: {destination}")
+        except Exception as e:
+            print(f"❌ Failed archiving JSON file: {e}")
+
+
+==================================================
+FILE: ./pipelines/prepare_db_product_load_pipeline.py
+==================================================
+from pathlib import Path
+
+class PrepareDbProductLoadPipeline:
+
+    def __init__(
+        self,
+        settings,
+        file_reader,
+        file_mover,
+        product_csv_dir,
+        load_csv_dir,
+        load_csv_file_name,
+        processed_csv_dir
+    ):
+        self.settings = settings
+        self.file_reader = file_reader
+        self.file_mover = file_mover
+        self.product_csv_dir = product_csv_dir
+        self.load_csv_dir = load_csv_dir
+        self.load_csv_file_name = load_csv_file_name
+        self.processed_csv_dir = processed_csv_dir
+
+    def process_preparation(self):
+        """Converts to a pure 'cat *.csv > target' streaming operation."""
+        source_dir = Path(self.product_csv_dir)
+        target_dir = Path(self.load_csv_dir)
+        
+        target_dir.mkdir(parents=True, exist_ok=True)
+        combined_filepath = target_dir / self.load_csv_file_name
+
+        # 1. Gather files, explicitly ignoring the output file if folders overlap
+        csv_files = [
+            f for f in source_dir.glob("*.csv") 
+            if f.resolve() != combined_filepath.resolve()
+        ]
+
+        if not csv_files:
+            print(f"⚠️ No CSV files found in: '{source_dir}'")
+            return
+
+        print(f"📂 Concatenating {len(csv_files)} files into '{combined_filepath}'...")
+
+        try:
+            # 2. Open output file once, then stream copy every input file into it
+            with open(combined_filepath, mode='w', encoding='utf-8') as outfile:
+                for csv_file in csv_files:
+                    with open(csv_file, mode='r', encoding='utf-8') as infile:
+                        # shutil optimized block copy or direct stream read
+                        outfile.write(infile.read())
+                    
+                    # Ensure files without a trailing newline don't mash headers together
+                    outfile.write('\n')
+                    
+            print(f"✅ Cat operation complete.")
+            
+        except Exception as e:
+            print(f"❌ Error during file concatenation: {e}")
+            return
+
+        # 3. Archive the processed files safely after the output file handles are closed
+        print(f"\n📦 Moving source files to archive...")
+        archive_dir = Path(self.processed_csv_dir)
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        
+        for csv_file in csv_files:
+            try:
+                dest = self.file_mover.move_file(csv_file, str(archive_dir))
+                print(f"  ➡️ Moved '{csv_file.name}' to archive.")
+            except Exception as e:
+                print(f"  ❌ Failed to move '{csv_file.name}': {e}")
+
+        print("\n🎉 Process complete.")
+
+
+==================================================
+FILE: ./pipelines/jd_product_pipeline.py
+==================================================
+import json
+from pathlib import Path
+
+class JobDescriptionProductPipeline:
+
+    def __init__(
+        self,
+        settings,
+        classifier,
+        file_reader,
+        file_writer,
+        file_mover,
+        json_input_dir,
+        json_output_dir,
+        json_processed_dir
+    ):
+        self.settings = settings
+        self.classifier = classifier
+        self.file_reader = file_reader
+        self.file_writer = file_writer
+        self.file_mover = file_mover
+        self.json_input_dir = json_input_dir
+        self.json_output_dir = json_output_dir
+        self.json_processed_dir = json_processed_dir
+
+    def process_all_files(self):
+        # Scan for existing JSON inputs generated by your raw JD process
+        input_path = Path(self.json_input_dir)
+        json_files = list(input_path.glob("*.json"))
+        
+        print(f"\n📂 Found {len(json_files)} extracted JD JSON files to parse for products")
+
+        for index, file_path in enumerate(json_files, 1):
+            print("\n" + "=" * 70)
+            print(f"🛠️ Isolating products ({index}/{len(json_files)}): {file_path.name}")
+            self._process_single_json(file_path)
+
+        print("\n🎉 Product identification pipeline execution finished successfully.")
+
+    def _process_single_json(self, file_path: Path):
+        try:
+            # 1. Read the existing structured JD JSON
+            with open(file_path, "r", encoding="utf-8") as f:
+                raw_json_str = f.read()
+
+            # 2. Query LLM to clean, translate, and classify raw tech tokens into strict items
+            product_json_data = self.classifier.classify(raw_json_str)
+
+        except Exception as e:
+            print(f"❌ Failed parsing or querying LLM for file {file_path.name}: {e}")
+            return
+
+        try:
+            # 3. Write structured classification data to the new product directory
+            output_file = Path(self.json_output_dir) / file_path.name
+            
+            # Ensure the directory exists dynamically
+            output_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            self.file_writer.write_text(
+                output_file, 
+                json.dumps(product_json_data, indent=2)
+            )
+            print(f"✅ Extracted Product Schema Saved: {output_file}")
+
+        except Exception as e:
+            print(f"❌ Failed to write product JSON output: {e}")
+            return
+
+        try:
+            # 4. Move processed raw file down the queue stream to avoid duplicate runtime loops
+            destination_dir = Path(self.json_processed_dir)
+            destination_dir.mkdir(parents=True, exist_ok=True)
+            
+            destination = self.file_mover.move_file(
+                file_path,
+                str(destination_dir)
+            )
+            print(f"📦 Archived Raw JD file out of entry point: {destination}")
+
+        except Exception as e:
+            print(f"❌ Failed to move raw processed JD to destination directory: {e}")
+
+
+==================================================
+FILE: ./pipelines/ico_rag_pipeline.py
+==================================================
+from pathlib import Path
+
+
+class ICORagPipeline:
+
+    def __init__(
+        self,
+        settings,
+        vector_store,
+        openai_service,
+        file_reader,
+        file_mover,
+        txt_input_dir,
+        txt_processed_dir,
+        chunk_size: int = 1000,
+        chunk_overlap: int = 200
+    ):
+        self.settings = settings
+        self.vector_store = vector_store
+        self.openai_service = openai_service
+        self.file_reader = file_reader
+        self.file_mover = file_mover
+        self.txt_input_dir = txt_input_dir
+        self.txt_processed_dir = txt_processed_dir
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+
+    def process_all_files(self):
+        input_path = Path(self.txt_input_dir)
+        txt_files = list(input_path.glob("*.txt"))
+
+        print(f"\n📂 Found {len(txt_files)} ICO documents to vectorize into Azure Vector DB.")
+
+        for index, file_path in enumerate(txt_files, 1):
+            print("\n" + "=" * 70)
+            print(f"🧠 Chunking & Indexing ({index}/{len(txt_files)}): {file_path.name}")
+            self._process_single_rag(file_path)
+
+        print("\n🎉 ICO RAG database ingestion finished successfully.")
+
+    def _process_single_rag(self, file_path: Path):
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                raw_text_str = f.read()
+
+            chunks = self._chunk_text(raw_text_str)
+            print(f"   ✂️ Generated {len(chunks)} text chunks.")
+
+            for i, chunk in enumerate(chunks, 1):
+                chunk_id = f"{file_path.stem}_chunk_{i}"
+
+                print(
+                    f"   Chunk {i}/{len(chunks)} | "
+                    f"ID={chunk_id} | "
+                    f"Length={len(chunk)} chars"
+                )
+
+                response = self.openai_service.client.embeddings.create(
+                    input=[chunk],
+                    model=self.settings.azure_openai_embedding_model
+                )
+
+                embedding_vector = response.data[0].embedding
+
+                print(f"   Vector length={len(embedding_vector)}")
+
+                self.vector_store.insert_vector_chunk(
+                    document_id=file_path.stem,
+                    chunk_id=chunk_id,
+                    text_content=chunk,
+                    vector=embedding_vector,
+                    topic="ico"
+                )
+
+            print(f"   ✅ Vector store indexed {len(chunks)} elements successfully.")
+
+        except Exception as e:
+            print(f"❌ Failed to execute Vector DB update for file {file_path.name}: {e}")
+            return
+
+        try:
+            destination_dir = Path(self.txt_processed_dir)
+            destination_dir.mkdir(parents=True, exist_ok=True)
+            self.file_mover.move_file(file_path, str(destination_dir))
+            print("📦 Archived source text file.")
+        except Exception as e:
+            print(f"❌ Failed to archive file: {e}")
+
+    def _chunk_text(self, text: str) -> list:
+        """Sliding-window word chunker."""
+        chunks = []
+        words = text.split()
+
+        word_size = self.chunk_size // 5
+        word_overlap = self.chunk_overlap // 5
+
+        step = word_size - word_overlap
+
+        if step <= 0:
+            raise ValueError("chunk_overlap must be smaller than chunk_size")
+
+        i = 0
+        while i < len(words):
+            chunk_words = words[i:i + word_size]
+            chunk = " ".join(chunk_words)
+
+            if chunk.strip():
+                chunks.append(chunk)
+
+            i += step
+
+        return chunks
+
+
+==================================================
+FILE: ./services/__init__.py
+==================================================
+
+
+
+==================================================
+FILE: ./services/azure_document_intelligence.py
+==================================================
+from azure.ai.documentintelligence import DocumentIntelligenceClient
+from azure.core.credentials import AzureKeyCredential
+
+class AzureDocumentIntelligenceClientWrapper:
+    """
+    A domain-specific wrapper around the Azure Document Intelligence SDK.
+    Provides clear intent for document analysis within the ATS workflow.
+    """
+    def __init__(self, endpoint: str, key: str):
+        self.document_intelligence_client = DocumentIntelligenceClient(
+            endpoint=endpoint, 
+            credential=AzureKeyCredential(key)
+        )
+
+    def analyze_job_ad(self, document_bytes: bytes) -> dict:
+        """
+        Uses Azure's prebuilt layout model to analyze and extract structural data from a job advertisement.
+        Returns a standard Python dictionary for downstream processing.
+        """
+        # Pass the bytes stream directly to 'body' parameter to avoid object extraction bugs
+        poller = self.document_intelligence_client.begin_analyze_document(
+            model_id="prebuilt-layout", 
+            body=document_bytes,
+            content_type="application/octet-stream" # Declares we are sending binary data directly
+        )
+        
+        # Block until processing is complete
+        sdk_result = poller.result()
+        
+        # Convert to a dictionary so the rest of the app isn't coupled to Azure SDK types
+        return sdk_result.as_dict()
+
+
+==================================================
+FILE: ./services/azure_openai.py
+==================================================
+from openai import AzureOpenAI
+
+
+class AzureOpenAIService:
+
+    def __init__(
+        self,
+        endpoint,
+        api_key,
+        api_version="2024-12-01-preview"
+    ):
+
+        self.client = AzureOpenAI(
+            azure_endpoint=endpoint,
+            api_key=api_key,
+            api_version=api_version
+        )
+
+    def parse_structured_output(
+        self,
+        model,
+        system_prompt,
+        user_text,
+        response_schema,
+        temperature=0
+    ):
+
+        response = (
+            self.client.beta.chat.completions.parse(
+                model=model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    },
+                    {
+                        "role": "user",
+                        "content": user_text
+                    }
+                ],
+                response_format=response_schema,
+                temperature=temperature
+            )
+        )
+
+        return (
+            response
+            .choices[0]
+            .message
+            .parsed
+        )
+
+
+
+==================================================
+FILE: ./services/text_extractor.py
+==================================================
+# What it should look like to support the clean dictionary:
+class TextExtractor:
+    def extract(self, result_dict: dict) -> str:
+        extracted_lines = []
+        
+        # Safely get the pages list out of the dictionary
+        pages = result_dict.get("pages", [])
+        
+        for page in pages:
+            # Azure dictionary format nests lines under 'lines' inside each page
+            for line in page.get("lines", []):
+                extracted_lines.append(line.get("content", ""))
+                
+        return "\n".join(extracted_lines)
+
+
+==================================================
+FILE: ./services/job_description_classifier.py
+==================================================
+from typing import List
+from pydantic import BaseModel, Field
+
+
+# ============================================
+# PYDANTIC SCHEMA
+# ============================================
+
+class IntersectedReality(BaseModel):
+
+    connected_terms: List[str] = Field(
+        description=(
+            "The terms being linked together by the LLM. "
+            "E.g., ['Java', 'CI/CD', 'Frequent Releases', 'Approachable']"
+        )
+    )
+
+    operational_implication: str = Field(
+        description=(
+            "What this combination actually means for daily work "
+            "(e.g., complex versioning, git controls, regression testing "
+            "matrices, handling rollback strategies)."
+        )
+    )
+
+    cross_functional_stakeholders: List[str] = Field(
+        description=(
+            "The teams or roles this candidate must collaborate with as a "
+            "direct result of these linked terms (e.g., QA Testers, Release "
+            "Managers, Devs, Operations staff)."
+        )
+    )
+
+    probable_business_context: str = Field(
+        description=(
+            "The underlying business landscape or tension causing this "
+            "(e.g., rolling out frequent patches in an emerging, highly "
+            "auditable financial tech ecosystem)."
+        )
+    )
+
+
+class TieredSoftwareEngineeringSchema(BaseModel):
+
+    role_tier: str = Field(
+        description=(
+            "The classified segment of this tech role. Must be one of: "
+            "'Application Development', 'DevOps & Infrastructure', "
+            "'Engineering Management', 'Data Engineering'"
+        )
+    )
+
+    company: str = Field(
+        description="The organization advertising the role."
+    )
+
+    job_title: str = Field(
+        description="The formal role title."
+    )
+
+    job_summary: str = Field(
+        description=(
+            "Concise high-level overview of the role's mission "
+            "and core purpose."
+        )
+    )
+
+    tech_stack: List[str] = Field(
+        description=(
+            "Explicit hard skills, frameworks, languages, cloud tools."
+        )
+    )
+
+    methodologies: List[str] = Field(
+        description=(
+            "Delivery styles, testing practices, deployment cadences."
+        )
+    )
+
+    soft_skills: List[str] = Field(
+        description=(
+            "Interpersonal, behavioral, and leadership traits requested."
+        )
+    )
+
+    relational_synthesis: List[IntersectedReality] = Field(
+        description=(
+            "CRITICAL: Read between the lines of the entire JD. Intersect "
+            "the tech stack, methodologies, and soft skills to deduce the "
+            "real-world engineering realities, version control pressures, "
+            "and cross-functional team dynamics."
+        )
+    )
+
+    job_benefits: str = Field(
+        description=(
+            "Salary, perks, pension, and remote/hybrid policies."
+        )
+    )
+
+
+# ============================================
+# SYSTEM PROMPT
+# ============================================
+
+SYSTEM_PROMPT = """
+You are an expert technical recruiter and systems architect specializing
+in Software Engineering and Tech Leadership roles.
+
+Your task is to parse messy job advertisements into a highly synthesized
+JSON schema.
+
+Instead of looking at terms in isolation, you must globally evaluate how
+the technologies, working methods, and traits connect to form specific,
+real-world operational realities.
+
+Deduce what high-level corporate buzzwords like 'Technical Leadership'
+or 'Frequent Releases' *actually* mean at a practical engineering level
+for the specified stack.
+"""
+
+
+# ============================================
+# CLASSIFIER
+# ============================================
+
+class JobDescriptionClassifier:
+
+    def __init__(
+        self,
+        openai_service,
+        model="gpt-5.4-mini"
+    ):
+
+        self.openai_service = openai_service
+        self.model = model
+
+    def classify(self, text):
+
+        result = (
+            self.openai_service
+            .parse_structured_output(
+                model=self.model,
+                system_prompt=SYSTEM_PROMPT,
+                user_text=text[:30000],
+                response_schema=TieredSoftwareEngineeringSchema,
+                temperature=0
+            )
+        )
+
+        return result.model_dump()
+
+
+
+==================================================
+FILE: ./services/azure_text_classifer.py
+==================================================
+from openai import AzureOpenAI
+
+class AzureTextClassifierWrapper:
+    """
+    A class-based wrapper around Azure OpenAI.
+    Provides a clean, dedicated boundary for LLM interactions.
+    """
+    def __init__(
+        self,
+        endpoint: str,
+        api_key: str,
+        api_version: str = "2024-12-01-preview"
+    ):
+        self.client = AzureOpenAI(
+            azure_endpoint=endpoint,
+            api_key=api_key,
+            api_version=api_version
+        )
+
+    def parse_structured_output(
+        self,
+        model: str,
+        system_prompt: str,
+        user_text: str,
+        response_schema,
+        temperature: float = 0.0
+    ):
+        """
+        Maintains the exact method interface that the working, 
+        heavily tested JobDescriptionClassifier expects.
+        """
+        response = self.client.beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_text}
+            ],
+            response_format=response_schema,
+            temperature=temperature
+        )
+        return response.choices[0].message.parsed
+
+
+==================================================
+FILE: ./services/reddit_product_classifer.py
+==================================================
+from typing import List, Optional
+from pydantic import BaseModel, Field
+
+
+# ============================================
+# PYDANTIC SCHEMA
+# ============================================
+
+class ProductMention(BaseModel):
+    product_name: str = Field(
+        description=(
+            "The standard, formal name of the software product, platform, "
+            "or library. Avoid conversational shorthand here (e.g., use 'Databricks' "
+            "or 'Amazon EMR', not 'DBX' or 'EMR')."
+        )
+    )
+
+    product_description: str = Field(
+        description=(
+            "CRITICAL: A factual, concise, objective summary defining exactly "
+            "what the tool is and its core technical purpose (e.g., 'A unified, cloud-based platform "
+            "for data analytics, data engineering, and artificial intelligence'). Do not "
+            "include conversational opinions, pros/cons, or context specific to this post here."
+        )
+    )
+
+    category: str = Field(
+        description=(
+            "The core industry market or architectural category this product belongs to. "
+            "Examples: 'Analytics', 'DevOps & Infrastructure', 'Security', 'Database', "
+            "'Data Integration', 'Containers & Orchestration'."
+        )
+    )
+    
+    context_of_mention: str = Field(
+        description="A short summary of how or why this product was explicitly brought up in the discussion."
+    )
+    
+    sentiment: str = Field(
+        description="The general developer sentiment towards this product in the post. Must be one of: 'Positive', 'Negative', 'Neutral', or 'Mixed'."
+    )
+    
+    pros_mentioned: List[str] = Field(
+        default=[],
+        description="Specific advantages, features, or design choices praised by the user."
+    )
+    
+    cons_mentioned: List[str] = Field(
+        default=[],
+        description="Specific limitations, cost issues, or functional complaints raised by the user."
+    )
+
+
+class RedditProductAnalysisSchema(BaseModel):
+    subreddit: str = Field(
+        description="The subreddit where the discussion took place (e.g., 'dataengineering')."
+    )
+    
+    thread_topic: str = Field(
+        description="The primary question or theme underlying the thread."
+    )
+    
+    identified_products: List[ProductMention] = Field(
+        description="A master collection of distinct products extracted to fuel database entity lookups."
+    )
+    
+    key_operational_takeaway: str = Field(
+        description="High level summary of the consensus reached by the engineers in the conversation."
+    )
+
+
+# ============================================
+# SYSTEM PROMPT
+# ============================================
+
+SYSTEM_PROMPT = """
+You are an expert technical data analyst and knowledge graph engineer specializing in cloud computing ecosystems, dev tools, and software products.
+
+Your goal is to parse unstructured text (such as developer discussion forums) and extract entities for a data engineering knowledge graph. 
+
+For each identified product, tool, framework, or cloud service, you must decouple its conversational context from its objective profile:
+1. Provide its canonical product name.
+2. Provide an accurate, dictionary-style technical description of what the tool actually is, drawing on your broad foundation knowledge of software ecosystems. 
+3. Assign a clean market category (e.g., 'Analytics', 'DevOps & Infrastructure').
+
+Ensure clean differentiation between these immutable global attributes and the specific user viewpoints or forum feedback.
+"""
+
+
+# ============================================
+# CLASSIFIER
+# ============================================
+
+class RedditProductClassifier:
+
+    def __init__(
+        self,
+        openai_service,
+        model="gpt-5.4-mini"
+    ):
+        self.openai_service = openai_service
+        self.model = model
+
+    def classify(self, text: str) -> dict:
+        """
+        Parses raw forum text to isolate baseline product definitions alongside 
+        sentiment telemetry, ensuring straightforward mapping into a downstream graph DB load asset.
+        """
+        result = (
+            self.openai_service
+            .parse_structured_output(
+                model=self.model,
+                system_prompt=SYSTEM_PROMPT,
+                user_text=text[:30000],
+                response_schema=RedditProductAnalysisSchema,
+                temperature=0
+            )
+        )
+
+        return result.model_dump()
+
+
+==================================================
+FILE: ./services/jd_product_classifier.py
+==================================================
+from typing import List
+from pydantic import BaseModel, Field
+
+# ============================================
+# PYDANTIC SCHEMA
+# ============================================
+
+class ExplicitProduct(BaseModel):
+    name: str = Field(
+        description="The clean, definitive product name explicitly found in the text. E.g., 'Kubernetes', 'Docker', 'Spring Boot'."
+    )
+    classifications: List[str] = Field(
+        description="Functional classifications. E.g., ['orchestration'], ['framework']."
+    )
+
+class ImplicitParadigm(BaseModel):
+    term: str = Field(
+        description="The compound skill or phrase from the text that implies a broader ecosystem. E.g., 'Java microservices', 'Infrastructure as Code'."
+    )
+    implied_ecosystem_anchors: List[str] = Field(
+        description=(
+            "The foundational technical pillars implied by this term. "
+            "For 'Java microservices', this must be: ['enterprise-java-framework', 'containerization', 'container-orchestration', 'asynchronous-messaging']. "
+            "For 'Infrastructure as Code', this must be: ['declarative-provisioning']."
+        )
+    )
+
+class JobDescriptionProductSchema(BaseModel):
+    explicit_products: List[ExplicitProduct] = Field(
+        description="Products explicitly named within the job description."
+    )
+    implicit_paradigms: List[ImplicitParadigm] = Field(
+        description="Compound terms that represent entire tech clusters, mapping them to their structural pillars."
+    )
+
+# ============================================
+# SYSTEM PROMPT
+# ============================================
+
+SYSTEM_PROMPT = """
+You are an expert technical taxonomy engine designed to build high-fidelity skills graphs. 
+Your job is to look at a Job Description JSON and break it into two distinct matching layers:
+
+1. EXPLICIT PRODUCTS: Extract only actual software products, languages, and frameworks explicitly mentioned (e.g., 'Java', 'Spring Boot', 'AWS', 'DynamoDB', 'Docker', 'Kubernetes', 'Gradle'). Classify them by their engineering function.
+
+2. IMPLICIT PARADIGMS: Look for high-level ecosystem terms like 'Java microservices' or 'Infrastructure as Code'. 
+Do NOT guess or hallucinate specific vendor products they might use (e.g., do not randomly assume they use Kafka or PostgreSQL unless written). 
+Instead, map the term to its architectural pillars (e.g., 'Java microservices' maps to anchors like ['enterprise-java-framework', 'containerization', 'container-orchestration']).
+
+Keep all classifications and anchors lowercase, utilizing kebab-case.
+"""
+
+class JobDescriptionProductClassifier:
+    def __init__(self, openai_service, model="gpt-5.4-mini"):
+        self.openai_service = openai_service
+        self.model = model
+
+    def classify(self, json_content_str: str) -> dict:
+        result = self.openai_service.parse_structured_output(
+            model=self.model,
+            system_prompt=SYSTEM_PROMPT,
+            user_text=json_content_str[:30000],
+            response_schema=JobDescriptionProductSchema,
+            temperature=0
+        )
+        return result.model_dump()
+
+
+==================================================
+FILE: ./services/ico_classifier.py
+==================================================
+from typing import List
+from pydantic import BaseModel, Field
+
+class ICOComplianceSchema(BaseModel):
+    organization: str = Field(description="Name of the entity under audit observation.")
+    governance_risk_score: str = Field(description="Assessed risk level: High, Medium, or Low.")
+    critical_breaches: List[str] = Field(description="Explicit violations of data principles or governance gaps.")
+    remediation_steps: List[str] = Field(description="Actionable steps recommended to align with ICO guidelines.")
+
+SYSTEM_PROMPT = """
+You are an expert technical data compliance auditor and legal knowledge engineer specializing in ICO (Information Commissioner's Office) data governance standards and privacy laws.
+Your goal is to parse unstructured text inputs and extract explicit regulatory compliance entities and risks.
+"""
+
+class ICOClassifier:
+    def __init__(self, openai_service, model="gpt-5.4-mini"):
+        self.openai_service = openai_service
+        self.model = model
+
+    def classify(self, text: str) -> dict:
+        result = self.openai_service.parse_structured_output(
+            model=self.model,
+            system_prompt=SYSTEM_PROMPT,
+            user_text=text[:30000],
+            response_schema=ICOComplianceSchema,
+            temperature=0
+        )
+        return result.model_dump()
+
+
+==================================================
+FILE: ./services/azure_vector_search_service.py
+==================================================
+from azure.core.credentials import AzureKeyCredential
+from azure.search.documents import SearchClient
+
+
+class AzureVectorSearchService:
+    """Azure AI Search vector index wrapper for ICO RAG ingestion."""
+
+    def __init__(self, settings):
+        self.settings = settings
+
+        print(f"SEARCH_ENDPOINT={settings.azure_search_endpoint}")
+        print(f"SEARCH_INDEX={settings.azure_search_index}")
+        print(f"SEARCH_KEY_PRESENT={bool(settings.azure_search_admin_key)}")
+
+        if not settings.azure_search_endpoint:
+            raise ValueError("Missing AZURE_SEARCH_ENDPOINT")
+
+        if not settings.azure_search_admin_key:
+            raise ValueError("Missing AZURE_SEARCH_ADMIN_KEY")
+
+        if not settings.azure_search_index:
+            raise ValueError("Missing AZURE_SEARCH_INDEX")
+
+        self.client = SearchClient(
+            endpoint=settings.azure_search_endpoint,
+            index_name=settings.azure_search_index,
+            credential=AzureKeyCredential(settings.azure_search_admin_key)
+        )
+
+    def insert_vector_chunk(
+        self,
+        document_id: str,
+        chunk_id: str,
+        text_content: str,
+        vector: list,
+        topic: str = "ico"
+    ):
+        """
+        Upload one text chunk into Azure AI Search.
+
+        This matches the working sample index schema:
+        id, text, source, topic, vector
+        """
+
+        document = {
+            "id": chunk_id,
+            "text": text_content,
+            "source": document_id,
+            "topic": topic,
+            "vector": vector
+        }
+
+        result = self.client.upload_documents(documents=[document])
+        return result
+
+
+==================================================
+FILE: ./storage/__init__.py
+==================================================
+
+
+
+==================================================
+FILE: ./storage/file_mover.py
+==================================================
+import shutil
+from pathlib import Path
+
+
+class FileMover:
+
+    @staticmethod
+    def move_file(source, destination_dir):
+
+        Path(destination_dir).mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        destination = (
+            Path(destination_dir) / Path(source).name
+        )
+
+        shutil.move(source, destination)
+
+        return destination
+
+
+
+==================================================
+FILE: ./storage/file_reader.py
+==================================================
+from pathlib import Path
+
+
+class FileReader:
+
+    @staticmethod
+    def get_pdf_files(directory):
+
+        return list(
+            Path(directory).glob("*.pdf")
+        )
+
+    @staticmethod
+    def get_text_files(directory):
+
+        return list(
+            Path(directory).glob("*.txt")
+        )
+
+    @staticmethod
+    def read_text(file_path):
+
+        with open(
+            file_path,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            return f.read()
+
+
+
+==================================================
+FILE: ./storage/file_writer.py
+==================================================
+import json
+from pathlib import Path
+
+
+class FileWriter:
+
+    @staticmethod
+    def write_text(output_path, text):
+
+        Path(output_path).parent.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        with open(
+            output_path,
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            f.write(text)
+
+    @staticmethod
+    def write_json(output_path, data):
+
+        Path(output_path).parent.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        with open(
+            output_path,
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            json.dump(
+                data,
+                f,
+                indent=2,
+                ensure_ascii=False
+            )
+
+
+
+==================================================
+FILE: ./database/db_test_load.py
+==================================================
+import os
+from dotenv import load_dotenv
+from gremlin_python.driver import client, serializer
+
+# Load environment variables from .env
+load_dotenv()
+
+COSMOS_ENDPOINT = os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_CONNECTION_GREMLIN_ENDPOINT")
+COSMOS_KEY = os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_KEY")
+
+DATABASE = "productdbid"
+GRAPH = "allproducts"
+
+# Create Gremlin client
+gremlin_client = client.Client(
+    COSMOS_ENDPOINT,
+    "g",
+    username=f"/dbs/{DATABASE}/colls/{GRAPH}",
+    password=COSMOS_KEY,
+    message_serializer=serializer.GraphSONSerializersV2d0()
+)
+
+# Test node insert
+query = """
+g.addV('product').
+  property('id', 'aws-test-2').
+  property('pk', 'aws-test-2').
+  property('name', 'Test Product 2').
+  property('type', 'product')
+"""
+
+try:
+    result = gremlin_client.submitAsync(query).result()
+    print("Node inserted successfully.")
+except Exception as e:
+    print("Error:", e)
+
+
+
+
+==================================================
+FILE: ./database/db_aws_load.py
+==================================================
+import os
+import csv
+from dotenv import load_dotenv
+from gremlin_python.driver import client, serializer
+
+# Load environment variables from .env
+load_dotenv()
+
+COSMOS_ENDPOINT = os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_CONNECTION_GREMLIN_ENDPOINT")
+COSMOS_KEY = os.getenv("AZURE_COSMOSDB_PRODUCT_PRIMARY_KEY")
+
+DATABASE = "productdbid"
+GRAPH = "allproducts"
+CSV_FILE_PATH = "dataload.csv"  # Name of your file on disk
+
+# Create Gremlin client
+gremlin_client = client.Client(
+    COSMOS_ENDPOINT,
+    "g",
+    username=f"/dbs/{DATABASE}/colls/{GRAPH}",
+    password=COSMOS_KEY,
+    message_serializer=serializer.GraphSONSerializersV2d0()
+)
+
+def generate_upsert_query(product_id, name):
+    """
+    Creates an idempotent Gremlin query using the coalesce pattern.
+    """
+    # Escape single quotes to prevent Gremlin syntax injection errors
+    safe_id = product_id.replace("'", "\\'")
+    safe_name = name.replace("'", "\\'")
+    
+    return f"""
+    g.V('{safe_id}').
+      fold().
+      coalesce(
+        unfold(),
+        addV('product').
+        property('id', '{safe_id}').
+        property('pk', '{safe_id}').
+        property('name', '{safe_name}').
+        property('type', 'product')
+      )
+    """
+
+def load_csv_file_to_cosmos(file_path):
+    # Check if file actually exists before starting
+    if not os.path.exists(file_path):
+        print(f"Error: The file '{file_path}' was not found in the current directory.")
+        return
+
+    print(f"Opening '{file_path}' for reading...")
+    
+    # Open file with utf-8 encoding to support diverse product names safely
+    with open(file_path, mode='r', encoding='utf-8') as f:
+        # csv.reader automatically handles the outer quotes and splits fields by commas
+        reader = csv.reader(f)
+        
+        success_count = 0
+        error_count = 0
+
+        for row in reader:
+            # Skip empty lines
+            if not row or len(row) < 2:
+                continue
+                
+            # Strip remaining inner quotes and whitespace
+            pk_field = row[0].strip('"').strip()
+            name_field = row[1].strip('"').strip()
+            
+            # Skip if primary identifier is missing
+            if not pk_field:
+                continue
+
+            query = generate_upsert_query(pk_field, name_field)
+            
+            try:
+                # Submit query and block for server response
+                result_set = gremlin_client.submitAsync(query).result()
+                result_set.all().result()
+                print(f" Successfully processed: {pk_field}")
+                success_count += 1
+            except Exception as e:
+                print(f" Failed to process '{pk_field}': {e}")
+                error_count += 1
+
+    print(f"\nProcessing complete! Summary: {success_count} processed, {error_count} failed.")
+
+try:
+    load_csv_file_to_cosmos(CSV_FILE_PATH)
+finally:
+    # Always cleanly close network sockets
+    gremlin_client.close()
+    print("Database client connection closed.")
+
+
+
+==================================================
+FILE: ./files/dynamic_graph_csv_exporter.py
+==================================================
+import json
+import sys
+import os
+
+def generate_graph_csv(json_filepath: str, output_filename: str = "products_load.csv"):
+    """
+    Reads a dynamic JSON classification file from disk and writes the identified products
+    to a CSV with triple quotes as column wrappers.
+    """
+    # 1. Verify that the file exists
+    if not os.path.exists(json_filepath):
+        print(f"Error: The input file '{json_filepath}' does not exist.")
+        return
+
+    # 2. Safely read and parse the dynamic JSON content
+    try:
+        with open(json_filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error: Failed to parse valid JSON from '{json_filepath}'. Detail: {e}")
+        return
+
+    # 3. Extract the array of identified products
+    products = data.get("identified_products", [])
+    if not products:
+        print(f"Warning: No 'identified_products' array found inside '{json_filepath}'.")
+        return
+    
+    # 4. Open output file and write using precise triple-quote formatting
+    with open(output_filename, mode='w', encoding='utf-8', newline='') as csv_file:
+        for item in products:
+            name = item.get("product_name", "").strip()
+            desc = item.get("product_description", "").strip()
+            cat = item.get("category", "").strip()
+            
+            # Explicitly wrapping fields in triple quotes and adding 2 trailing empty columns
+            row_str = f'"""{name}""","""{desc}""","""{cat}""","""""",""""""\n'
+            csv_file.write(row_str)
+            
+    print(f"Successfully processed '{json_filepath}' -> Generated graph load file: '{output_filename}' ({len(products)} products exported).")
+
+
+if __name__ == "__main__":
+    # This allows you to pass any file path dynamically from the terminal:
+    # e.g., python dynamic_graph_csv_exporter.py path/to/any_new_output.json
+    if len(sys.argv) > 1:
+        input_file = sys.argv[1]
+    else:
+        # Fallback default file name if no argument is passed
+        input_file = "aws-glue.json"
+        
+    generate_graph_csv(input_file)
+
+
+
+==================================================
+FILE: ./test1.py
+==================================================
+from azure.search.documents import SearchClient
+from azure.core.credentials import AzureKeyCredential
+
+client = SearchClient(
+    endpoint="https://skills-search-rag.search.windows.net",
+    index_name="skills-rag-v3",
+    credential=AzureKeyCredential("........")
+)
+
+doc = {
+    "id": "test_1",
+    "text": "hello",
+    "source": "test",
+    "topic": "test",
+    "vector": [0.0] * 3072
+}
+
+result = client.upload_documents([doc])
+
+print(result)
+
+
+

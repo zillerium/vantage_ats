@@ -12,6 +12,7 @@ from services.job_description_classifier import (
     JobDescriptionClassifier
 )
 
+from pipelines.ico_rag_query_pipeline import ICORagQueryPipeline
 from services.ico_classifier import ICOClassifier
 from pipelines.ico_rag_pipeline import ICORagPipeline
 
@@ -121,18 +122,29 @@ def build_product_jd_pipeline(settings, text_analyzer):
 
 
 def build_ico_pipeline(settings, text_analyzer, in_directory, in_processed_dir):
-    """Instantiates the processing context for ICO regulatory compliance vector RAG generation."""
+
+    print(f"SEARCH_ENDPOINT={settings.azure_search_endpoint}")
+    print(f"SEARCH_INDEX={settings.azure_search_index}")
+    print(f"SEARCH_KEY_PRESENT={bool(settings.azure_search_admin_key)}")
+    print(f"EMBEDDING_MODEL={settings.azure_openai_embedding_model}")
+
     return ICORagPipeline(
         settings=settings,
-        vector_store=AzureVectorSearchService(settings=settings), # Real Azure Vector DB Wrapper
-        openai_service=text_analyzer,                             # Embeddings generation source
+        vector_store=AzureVectorSearchService(settings=settings),
+        openai_service=text_analyzer,
         file_reader=FileReader(),
         file_mover=FileMover(),
         txt_input_dir=in_directory,
         txt_processed_dir=in_processed_dir
-    )   
- 
-  
+    )
+
+def build_ico_rag_query_pipeline(settings, text_analyzer):
+    """Instantiates a completely new isolated pipeline context for live queries."""
+    return ICORagQueryPipeline(
+        settings=settings,
+        vector_store=AzureVectorSearchService(settings=settings),
+        openai_service=text_analyzer
+    )  
 
 def build_product_pipeline(settings, text_analyzer):
 
@@ -167,11 +179,12 @@ def main():
 
     parser.add_argument(
         "pipeline",
-        choices=["extract_jd", "extract_product", "extract_ico", "jd", "product", "prepare_load", "ico", "create_product_jd", "product_csv", "db_load", "all"],
+        choices=["extract_jd", "extract_product", "rag","extract_ico", "jd", "product", "prepare_load", "ico", "create_product_jd", "product_csv", "db_load", "all"],
         help=(
             "Which pipeline to run: "
             "'extract_jd' (PDF→text), "
             "'extract_product' (PDF→text), "
+            "'rag' (RAG query), "
             "'extract_ico' (PDF→text), "
             "'jd' (text→JSON), "    
             "'product' (text→JSON), "
@@ -184,12 +197,20 @@ def main():
         )
     )
 
+    parser.add_argument(
+        "query_text",
+        nargs="?",
+        default=None,
+        help="The question text string required when running the 'rag' execution pipeline loop."
+    )
+
+
+
     args = parser.parse_args()
 
     settings = Settings.load()
     settings.validate()
 
- 
     if args.pipeline in ("create_product_jd", "all"):
         print("\n🚀 Starting Job Description Product Extraction Pipeline")
 
@@ -200,6 +221,25 @@ def main():
 
         build_product_jd_pipeline(settings, text_analyzer).process_all_files()
 
+
+  
+    # 🎯 NEW COMPLETELY ADDITIVE PATHWAY — ZERO OLD CODE IMPACTED
+    if args.pipeline == "rag":
+        if not args.query_text:
+            print("\n❌ Error: The 'rag' command choice requires a query string parameter.")
+            sys.exit(1)
+
+        rag_text_analyzer = AzureTextClassifierWrapper(
+            endpoint=settings.azure_openai_endpoint,
+            api_key=settings.azure_openai_key
+        )
+        
+        build_ico_rag_query_pipeline(settings, rag_text_analyzer).run_query(args.query_text)
+        return  # Exits immediately! Old code below is never reached or evaluated.
+            
+      
+
+  
     if args.pipeline in ("extract_jd", "all"):
 
         print("\n🚀 Starting PDF jd extraction pipeline")

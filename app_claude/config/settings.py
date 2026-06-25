@@ -17,6 +17,12 @@ class Settings:
     azure_openai_key: str
     azure_openai_model: str
 
+    azure_openai_embedding_model: str  # 💎 ADDED FIELD FOR RAG EMBEDDINGS
+
+    azure_search_endpoint: str
+    azure_search_admin_key: str
+    azure_search_index: str
+
     # ICO Pipeline Directories
     ico_pdf_dir: str
     ico_txt_dir: str
@@ -81,6 +87,10 @@ class Settings:
             azure_openai_model=os.getenv(
                 "AZURE_OPENAI_MODEL",
                 "gpt-5.4-mini"
+            ),
+            azure_openai_embedding_model=os.getenv(
+                "AZURE_OPENAI_EMBEDDING_MODEL",
+                "text-embedding-3-small"
             ),
             # JD Pipeline
             jd_pdf_dir=os.getenv(
@@ -150,7 +160,9 @@ class Settings:
                 "../../product/product-processed-json"
             ),
            # Database Pipeline
-
+            azure_search_endpoint=os.getenv("AZURE_SEARCH_ENDPOINT"),
+            azure_search_admin_key=os.getenv("AZURE_SEARCH_ADMIN_KEY"),
+            azure_search_index=os.getenv("AZURE_SEARCH_INDEX", "skills-rag-v4"),
             jd_processed_json_dir=os.getenv("JD_PROCESSED_JSON_DIR", "../../jd/jd-processed-json"),
             product_jd_json_dir=os.getenv("PRODUCT_JD_JSON_DIR", "../../jd-product/jd-product-json"),
             product_jd_processed_json_dir=os.getenv("PRODUCT_JD_PROCESSED_JSON_DIR", "../../jd-product/jd-product-processed-json"),   
@@ -175,6 +187,10 @@ class Settings:
             "AZURE_DOCUMENT_INTELLIGENCE_KEY": self.azure_doc_key,
             "AZURE_MODEL_EUROPE_ENDPOINT": self.azure_openai_endpoint,
             "AZURE_EUROPE_KEY": self.azure_openai_key,
+            "AZURE_OPENAI_EMBEDDING_MODEL": self.azure_openai_embedding_model,
+            "AZURE_SEARCH_ENDPOINT": self.azure_search_endpoint,
+            "AZURE_SEARCH_ADMIN_KEY": self.azure_search_admin_key,
+            "AZURE_SEARCH_INDEX": self.azure_search_index,
         }
 
         missing = [
@@ -192,4 +208,9 @@ class Settings:
             raise ValueError(
                 "AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT "
                 "must start with https://"
+            )
+ 
+        if not self.azure_search_endpoint.startswith("https://"):
+            raise ValueError(
+                "AZURE_SEARCH_ENDPOINT must start with https://"
             )
